@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VKS/Tanzu Field Guide — TAM Rapid-Enablement Playbook</title>
+<meta name="description" content="Internal study guide for VMware TAMs on vSphere Kubernetes Service (VKS) and the Tanzu ecosystem for Lenovo enterprise accounts.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ========== CSS Custom Properties ========== */
+:root {
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --transition: 0.2s ease;
+  --sidebar-width: 280px;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --bg-code: #1a2332;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-teal: #06b6d4;
+  --accent-teal-dim: rgba(6, 182, 212, 0.15);
+  --accent-purple: #a78bfa;
+  --accent-purple-dim: rgba(167, 139, 250, 0.15);
+  --accent-coral: #fb7185;
+  --accent-coral-dim: rgba(251, 113, 133, 0.15);
+  --accent-amber: #fbbf24;
+  --accent-amber-dim: rgba(251, 191, 36, 0.15);
+  --border: #334155;
+  --border-subtle: #1e293b;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --highlight-bg: rgba(6, 182, 212, 0.2);
+  --scrollbar-thumb: #475569;
+  --table-stripe: rgba(255,255,255,0.03);
+  --hero-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+}
+
+[data-theme="light"] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e2e8f0;
+  --bg-code: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent-teal: #0891b2;
+  --accent-teal-dim: rgba(8, 145, 178, 0.1);
+  --accent-purple: #7c3aed;
+  --accent-purple-dim: rgba(124, 58, 237, 0.1);
+  --accent-coral: #e11d48;
+  --accent-coral-dim: rgba(225, 29, 72, 0.1);
+  --accent-amber: #d97706;
+  --accent-amber-dim: rgba(217, 119, 6, 0.1);
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --highlight-bg: rgba(8, 145, 178, 0.12);
+  --scrollbar-thumb: #cbd5e1;
+  --table-stripe: rgba(0,0,0,0.02);
+  --hero-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f8fafc 100%);
+}
+
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-primary); }
+::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+
+::selection { background: var(--accent-teal); color: #fff; }
+
+a { color: var(--accent-teal); text-decoration: none; transition: color var(--transition); }
+a:hover { color: var(--text-primary); text-decoration: underline; }
+
+img { max-width: 100%; }
+
+/* ========== Layout ========== */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 20px 0;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+  padding: 0 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+}
+
+.sidebar-logo {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-teal);
+  letter-spacing: -0.5px;
+}
+
+.sidebar-logo span { color: var(--text-muted); font-weight: 400; }
+
+.sidebar nav { padding: 0 12px; }
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  line-height: 1.4;
+  text-decoration: none;
+}
+
+.sidebar nav a:hover {
+  background: var(--accent-teal-dim);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.sidebar nav a.active {
+  background: var(--accent-teal-dim);
+  color: var(--accent-teal);
+  font-weight: 500;
+}
+
+.sidebar nav a .nav-number {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 20px;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  min-width: 0;
+}
+
+/* ========== Top Bar ========== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  backdrop-filter: blur(12px);
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.search-container {
+  flex: 1;
+  max-width: 480px;
+  position: relative;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 8px 16px 8px 40px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.search-container input:focus { border-color: var(--accent-teal); }
+.search-container input::placeholder { color: var(--text-muted); }
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.search-hint {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+}
+
+.theme-toggle:hover { border-color: var(--accent-teal); color: var(--text-primary); }
+
+.expand-all-btn {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  transition: all var(--transition);
+}
+
+.expand-all-btn:hover { border-color: var(--accent-teal); color: var(--text-primary); }
+
+/* ========== Content Area ========== */
+.content-area {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 32px 80px;
+}
+
+/* ========== Hero ========== */
+.hero {
+  padding: 60px 0 40px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-family: var(--font-mono);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero .subtitle {
+  font-size: 17px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.hero .meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ========== Sections ========== */
+.section {
+  margin-top: 48px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 16px 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition);
+  user-select: none;
+}
+
+.section-header:hover { border-color: var(--accent-teal); }
+
+.section-header .section-icon {
+  font-size: 20px;
+  min-width: 28px;
+  text-align: center;
+}
+
+.section-header h2 {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 600;
+  flex: 1;
+  letter-spacing: -0.3px;
+}
+
+.section-header .chevron {
+  font-size: 18px;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+}
+
+.section-header.expanded .chevron { transform: rotate(90deg); }
+
+.section-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+  border-left: 3px solid transparent;
+}
+
+.section-body.expanded {
+  max-height: none;
+}
+
+.section-body-inner {
+  padding: 24px 20px;
+}
+
+/* Section type borders */
+.section[data-type="architecture"] .section-body { border-left-color: var(--accent-purple); }
+.section[data-type="hands-on"] .section-body { border-left-color: var(--accent-teal); }
+.section[data-type="customer"] .section-body { border-left-color: var(--accent-coral); }
+.section[data-type="warning"] .section-body { border-left-color: var(--accent-amber); }
+.section[data-type="reference"] .section-body { border-left-color: var(--text-muted); }
+
+/* ========== Typography ========== */
+h3 {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 28px 0 12px;
+  letter-spacing: -0.3px;
+}
+
+h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 20px 0 8px;
+}
+
+p { margin-bottom: 12px; color: var(--text-secondary); }
+p strong { color: var(--text-primary); }
+
+ul, ol { margin: 0 0 16px 24px; color: var(--text-secondary); }
+li { margin-bottom: 6px; }
+li strong { color: var(--text-primary); }
+
+/* ========== Quick Ref Card ========== */
+.quick-ref {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.quick-ref-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  transition: border-color var(--transition);
+}
+
+.quick-ref-item:hover { border-color: var(--accent-teal); }
+
+.quick-ref-item .label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.quick-ref-item .value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.quick-ref-item .value small {
+  font-weight: 400;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* ========== Code Blocks ========== */
+.code-block {
+  position: relative;
+  margin: 16px 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-tertiary);
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.copy-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  transition: all var(--transition);
+}
+
+.copy-btn:hover { border-color: var(--accent-teal); color: var(--accent-teal); }
+.copy-btn.copied { border-color: #22c55e; color: #22c55e; }
+
+.code-block pre {
+  background: var(--bg-code);
+  padding: 16px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Syntax highlighting */
+.code-block .kw { color: var(--accent-purple); }
+.code-block .str { color: #22c55e; }
+.code-block .comment { color: var(--text-muted); font-style: italic; }
+.code-block .key { color: var(--accent-teal); }
+.code-block .val { color: var(--accent-coral); }
+.code-block .flag { color: var(--accent-amber); }
+
+/* ========== Tables ========== */
+.table-wrapper {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th {
+  background: var(--bg-tertiary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  padding: 12px 16px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+tr:nth-child(even) { background: var(--table-stripe); }
+
+td strong { color: var(--text-primary); }
+
+/* ========== FAQ Accordion ========== */
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+  user-select: none;
+  transition: background var(--transition);
+}
+
+.faq-question:hover { background: var(--bg-tertiary); }
+
+.faq-question .faq-chevron {
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+  min-width: 16px;
+}
+
+.faq-question.expanded .faq-chevron { transform: rotate(90deg); }
+
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.faq-answer.expanded { max-height: 500px; }
+
+.faq-answer-inner {
+  padding: 12px 16px 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ========== Architecture Diagram ========== */
+.arch-diagram {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 16px 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre;
+  color: var(--text-secondary);
+}
+
+.arch-diagram .layer {
+  display: block;
+  padding: 10px 16px;
+  margin: 4px 0;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.arch-diagram .layer-paas { background: var(--accent-purple-dim); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+.arch-diagram .layer-workload { background: var(--accent-teal-dim); color: var(--accent-teal); border: 1px solid var(--accent-teal); }
+.arch-diagram .layer-supervisor { background: var(--accent-coral-dim); color: var(--accent-coral); border: 1px solid var(--accent-coral); }
+.arch-diagram .layer-vcf { background: var(--accent-amber-dim); color: var(--accent-amber); border: 1px solid var(--accent-amber); }
+.arch-diagram .layer-hw { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border); }
+
+/* ========== Checklist ========== */
+.study-plan { margin: 16px 0; }
+
+.study-day {
+  margin-bottom: 24px;
+}
+
+.study-day h4 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.day-progress {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  margin: 8px 0 12px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-teal), var(--accent-purple));
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.check-item input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 2px;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.check-item input[type="checkbox"]:checked {
+  background: var(--accent-teal);
+  border-color: var(--accent-teal);
+}
+
+.check-item input[type="checkbox"]:checked::after {
+  content: '\2713';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.check-item label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+.check-item input:checked + label {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* ========== Glossary ========== */
+.glossary-filter {
+  margin-bottom: 16px;
+}
+
+.glossary-filter input {
+  width: 100%;
+  max-width: 360px;
+  padding: 8px 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  outline: none;
+}
+
+.glossary-filter input:focus { border-color: var(--accent-teal); }
+
+/* ========== Callouts ========== */
+.callout {
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+.callout-warning {
+  background: var(--accent-amber-dim);
+  border-left: 3px solid var(--accent-amber);
+  color: var(--text-primary);
+}
+
+.callout-info {
+  background: var(--accent-teal-dim);
+  border-left: 3px solid var(--accent-teal);
+  color: var(--text-primary);
+}
+
+.callout-critical {
+  background: var(--accent-coral-dim);
+  border-left: 3px solid var(--accent-coral);
+  color: var(--text-primary);
+}
+
+.callout strong { display: block; margin-bottom: 4px; }
+
+/* ========== Search Highlights ========== */
+mark {
+  background: var(--highlight-bg);
+  color: var(--text-primary);
+  padding: 1px 3px;
+  border-radius: 2px;
+}
+
+.search-no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 15px;
+  display: none;
+}
+
+.section.search-hidden { display: none; }
+
+/* ========== Resource Links ========== */
+.resource-list { list-style: none; margin-left: 0; }
+
+.resource-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.resource-list li:last-child { border-bottom: none; }
+
+.resource-list a {
+  font-weight: 500;
+}
+
+.resource-category {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-teal);
+  margin: 20px 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ========== Footer ========== */
+.footer {
+  text-align: center;
+  padding: 32px;
+  font-size: 13px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: var(--shadow); }
+  .main-content { margin-left: 0; }
+  .hamburger { display: block; }
+  .content-area { padding: 0 20px 60px; }
+  .topbar { padding: 12px 16px; }
+  .search-hint { display: none; }
+}
+
+@media (max-width: 640px) {
+  .quick-ref { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .hero { padding: 32px 0 24px; }
+  .hero h1 { font-size: 24px; }
+  .section-header h2 { font-size: 15px; }
+  table { font-size: 13px; }
+  th, td { padding: 8px 10px; }
+}
+
+/* ========== Sidebar Overlay ========== */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 99;
+}
+
+.sidebar-overlay.active { display: block; }
+
+/* ========== Print ========== */
+@media print {
+  .sidebar, .topbar, .hamburger, .copy-btn, .theme-toggle, .expand-all-btn, .search-container, .sidebar-overlay { display: none !important; }
+  .main-content { margin-left: 0 !important; }
+  .section-body { max-height: none !important; overflow: visible !important; }
+  .faq-answer { max-height: none !important; overflow: visible !important; }
+  body { background: #fff; color: #000; font-size: 12px; }
+  .content-area { max-width: 100%; padding: 0; }
+  .section { break-inside: avoid; }
+  a { color: #000; }
+  a::after { content: " (" attr(href) ")"; font-size: 10px; color: #666; }
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- Sidebar Navigation -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">VKS/Tanzu <span>Field Guide</span></div>
+  </div>
+  <nav id="sidebarNav">
+    <a href="#quick-ref"><span class="nav-number">00</span> Quick Reference</a>
+    <a href="#wtf-vks"><span class="nav-number">01</span> WTF is VKS?</a>
+    <a href="#vks-36"><span class="nav-number">02</span> VKS 3.6 What's New</a>
+    <a href="#version-history"><span class="nav-number">03</span> Version History</a>
+    <a href="#lenovo-stack"><span class="nav-number">04</span> Lenovo Stack</a>
+    <a href="#hands-on"><span class="nav-number">05</span> Hands-On Workflows</a>
+    <a href="#competitive"><span class="nav-number">06</span> Competitive Positioning</a>
+    <a href="#faq"><span class="nav-number">07</span> Customer FAQ</a>
+    <a href="#resources"><span class="nav-number">08</span> Learning Resources</a>
+    <a href="#study-plan"><span class="nav-number">09</span> 3-Day Study Plan</a>
+    <a href="#glossary"><span class="nav-number">10</span> Glossary</a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">&#9776;</button>
+    <div class="search-container">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" id="searchInput" placeholder="Search topics, terms, commands..." aria-label="Search">
+      <span class="search-hint">/</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="expand-all-btn" id="expandAllBtn" aria-label="Expand or collapse all sections">Expand All</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+        <span id="themeIcon">&#9790;</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="content-area">
+
+    <!-- Hero -->
+    <div class="hero">
+      <h1>VKS/Tanzu Field Guide</h1>
+      <p class="subtitle">TAM rapid-enablement playbook for Lenovo accounts</p>
+      <p class="meta">Last updated: April 2026 &middot; VKS 3.6 &middot; VCF 9.0</p>
+    </div>
+
+    <!-- Search No Results -->
+    <div class="search-no-results" id="noResults">No matching content found. Try a different search term.</div>
+
+    <!-- ===== SECTION 0: Quick Reference ===== -->
+    <div class="section" id="quick-ref" data-type="reference">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#9889;</span>
+        <h2>Quick Reference Card</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+          <div class="quick-ref">
+            <div class="quick-ref-item">
+              <div class="label">Current VKS Version</div>
+              <div class="value">3.6 <small>GA March 2026</small></div>
+            </div>
+            <div class="quick-ref-item">
+              <div class="label">Current K8s Version</div>
+              <div class="value">1.35</div>
+            </div>
+            <div class="quick-ref-item">
+              <div class="label">Previous Name</div>
+              <div class="value">TKGs <small>Tanzu K8s Grid Service</small></div>
+            </div>
+            <div class="quick-ref-item">
+              <div class="label">Included In</div>
+              <div class="value">VCF 9.0 <small>& VCF 5.2+</small></div>
+            </div>
+            <div class="quick-ref-item">
+              <div class="label">CNCF Certified</div>
+              <div class="value">Yes <small>incl. AI Conformance</small></div>
+            </div>
+            <div class="quick-ref-item">
+              <div class="label">Extended Support</div>
+              <div class="value">24 months <small>per K8s version</small></div>
+            </div>
+            <div class="quick-ref-item">
+              <div class="label">Lenovo Hardware</div>
+              <div class="value">ThinkAgile VX <small>Series</small></div>
+            </div>
+            <div class="quick-ref-item">
+              <div class="label">Key CLI</div>
+              <div class="value">kubectl <small>+ VCF CLI</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 1: WTF is VKS ===== -->
+    <div class="section" id="wtf-vks" data-type="architecture">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128161;</span>
+        <h2>"WTF is VKS?" &mdash; The 5-Minute Explainer</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <h3>Core Concept</h3>
+          <p>VKS is VMware's enterprise Kubernetes runtime <strong>built directly into vSphere/VCF</strong>. It lets customers run containers at the same level as VMs &mdash; same policies, same security, same management plane. No separate K8s distro to install or manage.</p>
+
+          <h3>The Naming Journey</h3>
+          <div class="callout callout-warning">
+            <strong>&#9888; Critical context &mdash; customers are confused by naming changes</strong>
+          </div>
+          <ul>
+            <li><strong>2020&ndash;2023:</strong> "vSphere with Tanzu" / "Tanzu Kubernetes Grid Service" (TKGs)</li>
+            <li><strong>Oct 2024 (VKS 3.2):</strong> TanzuKubernetesCluster (TKC) API deprecated</li>
+            <li><strong>Mar 2025 (VKS 3.3):</strong> Official rebrand to <strong>"vSphere Kubernetes Service (VKS)"</strong> and "vSphere Kubernetes release (VKr)" replacing TKr</li>
+            <li><strong>Now:</strong> VKS is the name. Period. If customer says "Tanzu" they probably mean VKS unless they specifically mean Tanzu Platform (the PaaS).</li>
+          </ul>
+
+          <h3>VKS vs Tanzu Platform</h3>
+          <ul>
+            <li><strong>VKS</strong> = Kubernetes runtime/orchestration service <strong>INCLUDED in VCF</strong>. It's the infrastructure layer. Think "managed K8s on vSphere."</li>
+            <li><strong>Tanzu Platform</strong> = The PaaS layer that sits ABOVE VKS. Application lifecycle, service mesh, build services, developer experience. Can run on any K8s, not just VKS.</li>
+            <li><strong>Customer analogy:</strong> VKS is like EKS (the runtime), Tanzu Platform is like AWS App Runner (the developer platform on top).</li>
+          </ul>
+
+          <h3>Architecture Stack</h3>
+          <div class="arch-diagram" role="img" aria-label="VKS Architecture Stack Diagram">
+<span class="layer layer-paas">Tanzu Platform (PaaS) &mdash; Optional, separate product</span>
+
+<span class="layer layer-workload">VKS Workload Clusters &mdash; Your apps run here (Cluster API v1beta1)</span>
+
+<span class="layer layer-supervisor">vSphere Supervisor &mdash; K8s control plane in vSphere (3 CP VMs/cluster)
+  ┌─────────────┬─────────────┬─────────────┐
+  │  vSphere    │   Virtual   │    VKS      │
+  │  Namespaces │   Machine   │   Service   │
+  │  (RBAC +    │   Service   │  (Cluster   │
+  │   quotas)   │             │  lifecycle) │
+  └─────────────┴─────────────┴─────────────┘</span>
+
+<span class="layer layer-vcf">VMware Cloud Foundation (VCF) &mdash; vSphere + vSAN + NSX + SDDC Manager</span>
+
+<span class="layer layer-hw">Hardware: Lenovo ThinkAgile VX Series + XClarity Integrator for vCenter</span></div>
+
+          <h3>How VKS Actually Works</h3>
+          <ol>
+            <li>Admin enables <strong>vSphere Supervisor</strong> on a vSphere cluster (deploys 3 control plane VMs)</li>
+            <li>Admin creates <strong>vSphere Namespaces</strong> &mdash; resource boundaries with RBAC, storage policies, compute quotas, and VM classes</li>
+            <li>Developer requests a <strong>VKS Cluster</strong> by applying a YAML manifest (Cluster API v1beta1) to the Supervisor</li>
+            <li>VKS provisions the cluster: control plane + worker nodes as VMs, wired to vSAN storage, NSX/Avi networking, specified VKr version</li>
+            <li>Developer gets a kubeconfig and uses standard <code>kubectl</code> &mdash; it's a conformant, upstream K8s cluster</li>
+            <li>VKS handles lifecycle: upgrades, scaling (including scale-to-zero), node rotation, certificate management</li>
+          </ol>
+
+          <h3>vSphere Pods (VCF with NSX only)</h3>
+          <div class="callout callout-info">
+            <strong>Special mode:</strong> K8s pods run directly on ESXi using a "Spherelet" &mdash; essentially a micro-VM per pod. No guest cluster needed. Very efficient, but requires NSX networking. Not available in VVF (vSphere Foundation) deployments.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 2: VKS 3.6 What's New ===== -->
+    <div class="section" id="vks-36" data-type="hands-on">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#127381;</span>
+        <h2>VKS 3.6 &mdash; What's New</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+          <p>Announced at <strong>KubeCon EU Amsterdam, March 23, 2026</strong>. This is the latest release &mdash; know every feature and how to position it.</p>
+
+          <h3>Kubernetes 1.35 Support</h3>
+          <ul>
+            <li>CNCF-certified, conformant K8s</li>
+            <li><strong>24-month extended support</strong> per version with overlapping version support</li>
+            <li>Customers can upgrade on their own schedule</li>
+            <li>Notable 1.35 features: configurable <code>maxUnavailable</code> for StatefulSet rolling updates, improved topology awareness for latency-sensitive workloads</li>
+          </ul>
+
+          <h3>RHEL 9 Build Your Own Image (BYOI)</h3>
+          <ul>
+            <li>Huge for enterprise customers locked into Red Hat ecosystems</li>
+            <li>New <strong>ImageBaker</strong> tool (replaces Image Builder) integrated with VCF CLI</li>
+            <li>Supports RHEL 9, Photon OS 5, Ubuntu 22.04/24.04, Windows Server 2022</li>
+            <li>Heterogeneous clusters: different OS per node pool</li>
+            <li>ImageBaker is standalone (no vCenter dependency), uses OCI-based BuildKit</li>
+            <li>Customers keep their Red Hat licensing and support chain intact</li>
+          </ul>
+
+          <h3>TuneDProfile &mdash; Declarative Kernel Tuning</h3>
+          <ul>
+            <li>CRD for OS-level tuning via standard K8s YAML</li>
+            <li>Per-node-pool granularity &mdash; tune database pools differently from app pools</li>
+            <li>Built-in <code>builtin-vks-v3.6.0</code> profile solves 90% of common issues:
+              <ul>
+                <li><code>vm.max_map_count = 262144</code> (Elasticsearch/SonarQube)</li>
+                <li><code>kernel.pid_max &gt;= 4194304</code> (PID exhaustion on dense nodes)</li>
+                <li>Network ring buffer optimization</li>
+              </ul>
+            </li>
+            <li>Custom profiles for Redis, Kafka, MongoDB, Telco workloads</li>
+            <li>Automated drain-and-reboot handling for kernel parameter changes</li>
+            <li><strong>Replaces fragile init containers and DaemonSet hacks</strong></li>
+          </ul>
+
+          <h3>AppArmor Profile Management</h3>
+          <ul>
+            <li>Define AppArmor profiles as Custom Resources</li>
+            <li>Auto-sync across all worker nodes or specific node pools</li>
+            <li>Granular security without locking clusters into rigid hardening</li>
+          </ul>
+
+          <h3>Open, Extensible Networking</h3>
+          <ul>
+            <li>Supported path for third-party CNI plugins (not just Antrea)</li>
+            <li>New partnerships: <strong>F5 BIG-IP CIS, Kong Gateway, Tigera Calico</strong></li>
+            <li>CNI selection during cluster creation via <code>bootstrapAddons</code> variable (VKr 1.35+)</li>
+            <li><code>ClusterBootstrap</code> for CNI is deprecated for 1.35+</li>
+          </ul>
+
+          <h3>NGINX Deprecation &rarr; Avi Gateway API</h3>
+          <div class="callout callout-critical">
+            <strong>&#9888; TAM Action Required:</strong> NGINX Ingress Controller deprecated upstream in K8s 1.35. Proactively discuss Avi Gateway API migration path with customers using NGINX.
+          </div>
+
+          <h3>Upgrade Safety Improvements</h3>
+          <ul>
+            <li>Pre-upgrade checks now detect misconfigured admission webhooks (not just PDBs)</li>
+            <li>Checks run continuously, exposed via <code>SystemCheckSucceeded</code> Condition</li>
+            <li>Identifies blockers <strong>BEFORE</strong> maintenance windows, not during</li>
+          </ul>
+
+          <h3>nftables Backend for kube-proxy</h3>
+          <ul>
+            <li>Better performance and scalability for network policy enforcement</li>
+            <li>Replaces iptables-based kube-proxy</li>
+          </ul>
+
+          <h3>VKS Support Bundle Tool</h3>
+          <ul>
+            <li>Cluster users can generate support bundles independently</li>
+            <li>No longer requires vCenter SSO Administrator privileges</li>
+          </ul>
+
+          <h3>Centralized Firewall Management</h3>
+          <ul>
+            <li>API-driven management of node-level firewall rules across all supported OSes</li>
+            <li>Open required ports for HostPorts and NodePort Services through cluster configuration</li>
+            <li>Replaces privileged init containers or DaemonSets for port management</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 3: Version History ===== -->
+    <div class="section" id="version-history" data-type="reference">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128197;</span>
+        <h2>Version History &amp; Upgrade Lifecycle</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <h3>Version Matrix</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>VKS</th><th>K8s Versions</th><th>GA Date</th><th>Key Features</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>3.6</strong></td><td>1.32, 1.33, 1.34, 1.35</td><td>Mar 2026</td><td>RHEL 9 BYOI, TuneDProfiles, AppArmor CRDs, CNI flexibility, nftables, ImageBaker</td></tr>
+                <tr><td><strong>3.5</strong></td><td>1.32, 1.33, 1.34</td><td>~Nov 2025</td><td>Incremental improvements</td></tr>
+                <tr><td><strong>3.4</strong></td><td>1.32, 1.33</td><td>Jun 2025</td><td>Istio service mesh standard package, extended K8s support</td></tr>
+                <tr><td><strong>3.3</strong></td><td>1.32</td><td>Mar 2025</td><td>TKGs&rarr;VKS rebrand, FIPS mode, gMSA, scale-to/from-zero, TKC&rarr;CAPI migration</td></tr>
+                <tr><td><strong>3.2</strong></td><td>1.31</td><td>Oct 2024</td><td>TKC API deprecation announced, Cluster API transition begins</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>The Three-Layer Upgrade Model</h3>
+          <div class="callout callout-warning">
+            <strong>&#9888; This confuses everyone &mdash; make sure you can explain it clearly</strong>
+          </div>
+          <ol>
+            <li>
+              <strong>Supervisor Upgrade</strong> &mdash; Least frequent. In vSphere 8.x: delivered via vCenter patches. In vSphere 9.x: decoupled from vCenter, uses content library. Must be on Supervisor K8s 1.30+ for VKS 3.6.
+            </li>
+            <li>
+              <strong>VKS Version Upgrade</strong> &mdash; More common (~every 4 months, offset from upstream by ~2 months). Downloaded from Broadcom support portal as a package YAML. Registered and activated on the Supervisor. Delivers new K8s versions AND new ClusterClass templates.
+            </li>
+            <li>
+              <strong>VKr (vSphere Kubernetes Release) Upgrade</strong> &mdash; Per-cluster. Upgrading the actual Kubernetes version on your workload clusters. Independent of the other two. Rolling update of nodes.
+            </li>
+          </ol>
+
+          <div class="callout callout-critical">
+            <strong>&#9888; Critical upgrade rule:</strong> VKS 3.6 drops VKr 1.31 compatibility. Before upgrading to VKS 3.6, ALL clusters must be on VKr 1.32 or later.
+          </div>
+
+          <h3>TKC &rarr; Cluster API Migration</h3>
+          <div class="callout callout-critical">
+            <strong>&#9888; #1 Action Item for existing VKS/TKGs customers</strong>
+          </div>
+          <ul>
+            <li>TanzuKubernetesCluster (TKC) API is <strong>deprecated since VKS 3.2</strong></li>
+            <li>TKC cannot create clusters with K8s v1.33 or later</li>
+            <li>VKS 3.3 introduced streamlined migration tooling</li>
+            <li>To upgrade existing clusters to v1.33+, you <strong>MUST</strong> first migrate off TKC API</li>
+            <li>Known issue: retiring a TKC with Additional Trusted CA certificates requires a workaround (fixed in VKS 3.3.3)</li>
+            <li><strong>TAM action:</strong> ask EVERY customer if they're still on TKC API and start migration planning NOW</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 4: Lenovo Stack ===== -->
+    <div class="section" id="lenovo-stack" data-type="customer">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#127981;</span>
+        <h2>The Lenovo Stack &mdash; ThinkAgile VX + VCF + VKS</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <h3>The Joint Solution</h3>
+          <p>Lenovo ThinkAgile VX Series is the co-engineered HCI platform purpose-built for VMware Cloud Foundation. Factory-integrated, pre-configured, and validated for VCF compliance. This is the hardware your Lenovo customers are running VKS on.</p>
+
+          <h3>Hardware Lineup</h3>
+          <ul>
+            <li><strong>ThinkAgile VX630 V3</strong> &mdash; 2-socket 1U server (compact/dense)</li>
+            <li><strong>ThinkAgile VX650 V3</strong> &mdash; 2-socket 2U server (more expansion)</li>
+            <li>Both feature 5th Gen Intel Xeon Scalable processors</li>
+            <li><strong>ThinkAgile FX</strong> &mdash; Flexible rack-based systems for custom configurations</li>
+            <li><strong>ThinkSystem SR675 V3 / SR670 V2</strong> &mdash; GPU-dense (up to 8 GPUs in 3U) for AI/ML workloads on VKS</li>
+          </ul>
+
+          <h3>Lenovo XClarity Integration</h3>
+          <ul>
+            <li><strong>XClarity Administrator</strong> &mdash; Centralized hardware management</li>
+            <li><strong>XClarity Integrator for VMware vCenter</strong> &mdash; Lenovo hardware management directly inside vCenter</li>
+            <li><strong>XClarity Integrator for VCF Operations</strong> &mdash; Same but for VCF Ops</li>
+            <li>Benefits: single pane of glass, 48% faster deployment, deep hardware-to-VM visibility</li>
+          </ul>
+
+          <h3>Lenovo TruScale</h3>
+          <ul>
+            <li>Pay-as-you-go consumption model for on-premises infrastructure</li>
+            <li><strong>TruScale Hybrid Cloud with VMware (VCF)</strong> &mdash; as-a-service deployment</li>
+            <li>Full flexibility, maintenance, support, and management included</li>
+            <li>Real-time usage transparency</li>
+          </ul>
+
+          <h3>VCF 9.0 on ThinkAgile VX Highlights</h3>
+          <ul>
+            <li>vSAN ESA with Global Dedup &mdash; <strong>34% storage TCO reduction</strong></li>
+            <li>vSAN-to-vSAN native replication for disaster recovery</li>
+            <li>VKS enables VMs and containers as equal citizens</li>
+            <li>DPU (Data Processing Unit) support via Distributed Services Engine</li>
+            <li>VCF design blueprints for different availability needs</li>
+          </ul>
+
+          <h3>Key Lenovo Reference Docs</h3>
+          <ul class="resource-list">
+            <li><a href="https://lenovopress.lenovo.com/lp1581-deployment-guide-vmware-cloud-foundation-on-lenovo-thinkagile-vx-fx" target="_blank">Deployment Guide: VCF on ThinkAgile VX and FX (LP1581)</a></li>
+            <li><a href="https://lenovopress.lenovo.com/lp2248.pdf" target="_blank">VCF 9.0 on ThinkAgile VX (LP2248)</a></li>
+            <li><a href="https://lenovopress.lenovo.com/lp1265-vmware-software-solution-product-guide" target="_blank">VMware Software Solution Product Guide (LP1265)</a></li>
+            <li><a href="https://lenovopress.lenovo.com/software/alliances/vmware" target="_blank">Lenovo Press VMware Alliance Page</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 5: Hands-On ===== -->
+    <div class="section" id="hands-on" data-type="hands-on">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128187;</span>
+        <h2>Hands-On: Key VKS Workflows</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <h3>Login to Supervisor (legacy kubectl-vsphere)</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code>kubectl-vsphere login \
+  <span class="flag">--insecure-skip-tls-verify</span> \
+  <span class="flag">--vsphere-username</span> administrator@vsphere.local \
+  <span class="flag">--server</span>=&lt;supervisor-api-server-ip&gt; \
+  <span class="flag">--tanzu-kubernetes-cluster-namespace</span>=&lt;namespace&gt; \
+  <span class="flag">--tanzu-kubernetes-cluster-name</span>=&lt;cluster-name&gt;</code></pre>
+          </div>
+
+          <h3>Login via VCF CLI (VCF 9 / modern method)</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># Download kubeconfig from vCenter UI or VCF CLI</span>
+<span class="comment"># Then use --kubeconfig flag</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;path-to-kubeconfig&gt; get nodes</code></pre>
+          </div>
+
+          <h3>Create a VKS Cluster (Cluster API v1beta1)</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>yaml</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="key">apiVersion:</span> <span class="val">cluster.x-k8s.io/v1beta1</span>
+<span class="key">kind:</span> <span class="val">Cluster</span>
+<span class="key">metadata:</span>
+  <span class="key">name:</span> <span class="val">my-workload-cluster</span>
+  <span class="key">namespace:</span> <span class="val">my-namespace</span>
+<span class="key">spec:</span>
+  <span class="key">clusterNetwork:</span>
+    <span class="key">pods:</span>
+      <span class="key">cidrBlocks:</span> [<span class="str">"192.168.0.0/16"</span>]
+    <span class="key">services:</span>
+      <span class="key">cidrBlocks:</span> [<span class="str">"10.96.0.0/12"</span>]
+  <span class="key">topology:</span>
+    <span class="key">class:</span> <span class="val">tanzukubernetescluster</span>  <span class="comment"># or latest builtin-generic class</span>
+    <span class="key">version:</span> <span class="val">v1.35.0+vmware.1</span>
+    <span class="key">controlPlane:</span>
+      <span class="key">replicas:</span> <span class="val">3</span>
+      <span class="key">metadata:</span>
+        <span class="key">annotations:</span>
+          <span class="key">run.tanzu.vmware.com/resolve-os-image:</span> <span class="val">os-name=ubuntu</span>
+    <span class="key">workers:</span>
+      <span class="key">machineDeployments:</span>
+        - <span class="key">class:</span> <span class="val">node-pool</span>
+          <span class="key">name:</span> <span class="val">worker-pool-1</span>
+          <span class="key">replicas:</span> <span class="val">3</span>
+          <span class="key">metadata:</span>
+            <span class="key">annotations:</span>
+              <span class="key">run.tanzu.vmware.com/resolve-os-image:</span> <span class="val">os-name=ubuntu</span>
+    <span class="key">variables:</span>
+      - <span class="key">name:</span> <span class="val">vmClass</span>
+        <span class="key">value:</span> <span class="val">best-effort-large</span>
+      - <span class="key">name:</span> <span class="val">storageClass</span>
+        <span class="key">value:</span> <span class="val">vcf-default-storage-policy</span></code></pre>
+          </div>
+
+          <h3>Apply and Check Cluster</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code>kubectl apply -f cluster.yaml
+kubectl get cluster -n my-namespace
+kubectl get machines -n my-namespace</code></pre>
+          </div>
+
+          <h3>Check VKS Cluster Readiness Conditions</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code>kubectl get cluster my-workload-cluster -n my-namespace -o yaml | grep -A 20 <span class="str">"conditions:"</span></code></pre>
+          </div>
+
+          <h3>Scale Worker Nodes</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># Edit the cluster spec</span>
+kubectl edit cluster my-workload-cluster -n my-namespace
+<span class="comment"># Change workers.machineDeployments[0].replicas to desired count</span></code></pre>
+          </div>
+
+          <h3>TuneDProfile Example (VKS 3.6)</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>yaml</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="key">apiVersion:</span> <span class="val">run.tanzu.vmware.com/v1alpha1</span>
+<span class="key">kind:</span> <span class="val">TuneDProfile</span>
+<span class="key">metadata:</span>
+  <span class="key">name:</span> <span class="val">high-perf-database</span>
+  <span class="key">namespace:</span> <span class="val">my-namespace</span>
+<span class="key">spec:</span>
+  <span class="key">profile:</span> |
+    [main]
+    summary=High performance database profile
+    include=builtin-vks
+
+    [sysctl]
+    vm.max_map_count=262144
+    vm.swappiness=1
+    vm.overcommit_memory=1
+    net.core.somaxconn=65535
+    net.ipv4.tcp_max_syn_backlog=65535</code></pre>
+          </div>
+
+          <h3>List Available VKr Versions</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code>kubectl get kubernetesreleases
+<span class="comment"># or for legacy:</span>
+kubectl get tanzukubernetesreleases</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 6: Competitive Positioning ===== -->
+    <div class="section" id="competitive" data-type="customer">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#9876;</span>
+        <h2>Competitive Positioning</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Feature</th><th>VKS (VMware)</th><th>OpenShift (Red Hat)</th><th>Rancher (SUSE)</th><th>EKS Anywhere (AWS)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Included in platform</strong></td><td>Yes (VCF)</td><td>No (separate)</td><td>No (separate)</td><td>No (separate)</td></tr>
+                <tr><td><strong>vSphere native</strong></td><td>Deep (Supervisor)</td><td>Partial (CSI/CPI)</td><td>Partial</td><td>Partial</td></tr>
+                <tr><td><strong>VMware admin friendly</strong></td><td>Yes</td><td>No (new paradigm)</td><td>Somewhat</td><td>No</td></tr>
+                <tr><td><strong>CNCF Certified</strong></td><td>Yes (+ AI)</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td><strong>Extended K8s support</strong></td><td>24 months</td><td>~18 months</td><td>Varies</td><td>~14 months</td></tr>
+                <tr><td><strong>Air-gap support</strong></td><td>Yes (native)</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td><strong>Windows containers</strong></td><td>Yes</td><td>Yes</td><td>Limited</td><td>No</td></tr>
+                <tr><td><strong>GPU/AI workloads</strong></td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+                <tr><td><strong>Multi-tenancy</strong></td><td>vSphere Namespaces</td><td>Projects</td><td>Projects/NS</td><td>Namespaces</td></tr>
+                <tr><td><strong>Cost for VCF customers</strong></td><td><strong>Included</strong></td><td>Additional</td><td>Additional</td><td>Additional</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Key Positioning Messages</h3>
+          <ol>
+            <li><strong>"You already own it"</strong> &mdash; VKS is included in VCF. No additional license for the K8s runtime.</li>
+            <li><strong>"Your team already knows it"</strong> &mdash; vSphere admins manage VKS through familiar vCenter/VCF tools. No retraining.</li>
+            <li><strong>"Enterprise lifecycle"</strong> &mdash; 24-month support windows, upgrade guardrails, pre-checks. Built for change advisory boards.</li>
+            <li><strong>"One platform, all workloads"</strong> &mdash; VMs and containers managed equally. No separate DevOps stack.</li>
+            <li><strong>"Open and extensible"</strong> &mdash; CNCF certified, Cluster API based, supports third-party CNI, Istio, Velero.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 7: FAQ ===== -->
+    <div class="section" id="faq" data-type="customer">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#10067;</span>
+        <h2>Common Customer Questions</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "We're still on TKC API. What do we need to do?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                You need to migrate to Cluster API (v1beta1) before upgrading to K8s v1.33 or later. VKS 3.3 introduced a streamlined migration mechanism. The TKC API is deprecated and will be removed. <strong>Start migration planning now</strong> &mdash; this is the #1 action item for any existing VKS/TKGs customer.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "How is VKS different from Tanzu?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                VKS is the Kubernetes runtime built into VCF &mdash; it provisions and manages K8s clusters on vSphere infrastructure. Tanzu Platform is a separate PaaS product that provides developer experience, application lifecycle, and service mesh capabilities on top of any Kubernetes. You can use VKS without Tanzu Platform, and many customers do.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "What about Broadcom licensing changes?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                VKS is included in VMware Cloud Foundation (VCF) licensing. There is no separate VKS license. VCF is sold as a 3-year minimum subscription, licensed per core (minimum 16 cores per CPU, 72 per order). If the customer is on VCF, they already have VKS. Tanzu Platform features may require additional licensing.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "Can we run VKS air-gapped?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Yes. VKS supports air-gapped deployments natively. You manually download VKS packages and VKr images from the Broadcom support portal, host them in a local content library, and register them with vCenter. The new ImageBaker tool in VKS 3.6 also operates standalone without vCenter dependency.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "What about GPU and AI/ML workloads?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                VKS supports GPU passthrough for AI/ML workloads. VCF 9 with ThinkAgile VX supports NVIDIA GPU-dense configurations (ThinkSystem SR675 V3 with up to 8 GPUs). VKS earned CNCF AI Conformance certification. Standard packages support frameworks like TensorFlow, PyTorch, and Kubeflow on VKS clusters.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "NGINX Ingress is deprecated &mdash; what do we use?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Kubernetes 1.35 officially deprecates the NGINX Ingress Controller. Broadcom recommends migrating to the <strong>Avi Gateway API</strong>, which provides native integration with VKS and the Avi load balancer. F5 BIG-IP CIS is also now a validated option for customers with existing F5 investments.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "How do we handle database workloads on K8s?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                VKS 3.6 introduces <strong>TuneDProfiles</strong> &mdash; declarative kernel tuning as a CRD. The built-in profile fixes common issues (vm.max_map_count for Elasticsearch, PID limits for dense workloads). You can create custom profiles per node pool for Redis, Kafka, MongoDB, etc. This replaces hacky init containers and DaemonSets.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "Why VKS over just installing upstream Kubernetes ourselves?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                Lifecycle management. VKS handles provisioning, upgrades, scaling, certificate rotation, networking integration (NSX/Avi), storage integration (vSAN CNS), RBAC (vSphere Namespaces), and monitoring &mdash; all through the VCF platform your team already manages. Upstream K8s gives you day-0. VKS gives you day-0 through day-2+.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "What OS options do we have for nodes?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                As of VKS 3.6: <strong>Photon OS 5, Ubuntu 22.04 and 24.04, Windows Server 2022, and RHEL 9</strong> (via BYOI / ImageBaker). You can run heterogeneous clusters with different OS per node pool. Ubuntu Pro subscription is required for Ubuntu FIPS mode.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+              <span class="faq-chevron">&#9654;</span>
+              "How does VKS integrate with our existing Lenovo XClarity management?"
+            </div>
+            <div class="faq-answer">
+              <div class="faq-answer-inner">
+                XClarity Integrator for VMware vCenter and VCF Operations provides unified hardware-to-workload visibility. Lenovo hardware health, firmware updates, and configuration management appear directly in vCenter alongside your VKS clusters and VMs. It's a single pane of glass from bare metal to containers.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 8: Learning Resources ===== -->
+    <div class="section" id="resources" data-type="reference">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128218;</span>
+        <h2>Learning Resources</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <div class="resource-category">Official Documentation</div>
+          <ul class="resource-list">
+            <li><a href="https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vsphere-supervisor-services-and-standalone-components/latest/managing-vsphere-kubernetes-service.html" target="_blank">VKS Technical Documentation</a></li>
+            <li><a href="https://techdocs.broadcom.com/us/en/vmware-cis/vcf/vsphere-supervisor-services-and-standalone-components/latest/release-notes/vmware-tanzu-kubernetes-grid-service-release-notes.html" target="_blank">VKS Release Notes</a></li>
+            <li><a href="https://www.vmware.com/products/cloud-infrastructure/vsphere-kubernetes-service" target="_blank">VKS Product Page</a></li>
+            <li><a href="https://www.vmware.com/docs/modern-applications-vmware-vsphere-kubernetes-service" target="_blank">VKS Solution Overview PDF</a></li>
+          </ul>
+
+          <div class="resource-category">VMware/Broadcom Blogs (read these first)</div>
+          <ul class="resource-list">
+            <li><a href="https://blogs.vmware.com/cloud-foundation/2026/02/11/vmware-vsphere-kubernetes-service3-6-making-enterprise-kubernetes-safer-more-flexible-and-easier-to-operate/" target="_blank">VKS 3.6 GA Announcement</a></li>
+            <li><a href="https://blogs.vmware.com/cloud-foundation/2026/03/20/tunedprofile-vks-3-6-os-level-tuning-kubernetes/" target="_blank">TuneDProfile Deep-Dive</a></li>
+            <li><a href="https://blogs.vmware.com/cloud-foundation/2026/02/13/vsphere-kubernetes-service-3-6-rhel-support/" target="_blank">RHEL 9 BYOI Guide</a></li>
+            <li><a href="https://blogs.vmware.com/cloud-foundation/2025/03/04/vmware-vsphere-kubernetes-service-3-3-is-now-ga/" target="_blank">VKS 3.3 GA (rebrand announcement)</a></li>
+            <li><a href="https://blogs.vmware.com/cloud-foundation/2025/03/06/istio-on-vsphere-kubernetes-service-vks-a-walkthrough/" target="_blank">Istio on VKS Walkthrough</a></li>
+            <li><a href="https://blogs.vmware.com/cloud-foundation/2026/02/04/a-perfect-match-for-big-data-vmware-vsphere-kubernetes-service-and-tanzu-greenplum/" target="_blank">VKS + Tanzu Greenplum for Big Data</a></li>
+            <li><a href="https://blogs.vmware.com/cloud-foundation/2025/07/24/unlocking-new-possibilities-extend-vmware-cloud-foundation-with-enhanced-vsphere-kubernetes-service-add-ons/" target="_blank">VKS Standard Packages</a></li>
+          </ul>
+
+          <div class="resource-category">Community Blogs &amp; Guides</div>
+          <ul class="resource-list">
+            <li><a href="https://williamlam.com/2025/08/ms-a2-vcf-9-0-lab-configuring-vsphere-kubernetes-service-vks.html" target="_blank">William Lam &mdash; VCF 9.0 Lab: Configuring VKS</a></li>
+            <li><a href="https://mpoore.io/2024/an-introduction-to-vsphere-supervisor-and-vsphere-kubernetes-service-vks/" target="_blank">mpoore.io &mdash; Introduction to Supervisor and VKS</a></li>
+            <li><a href="https://blog.leaha.co.uk/2025/08/29/vks-tanzu-configuration-guide/" target="_blank">Leaha's Blog &mdash; VKS/Tanzu Configuration Guide</a></li>
+            <li><a href="https://medium.com/@bob-bauer/understanding-supervisor-and-vsphere-kubernetes-service-vks-upgrades-53dbccf53756" target="_blank">Bob Bauer &mdash; Understanding VKS Upgrades</a></li>
+          </ul>
+
+          <div class="resource-category">Video Resources</div>
+          <ul class="resource-list">
+            <li><a href="https://youtu.be/D2KKWribGms" target="_blank">Istio on VKS Video Walkthrough</a></li>
+            <li><a href="https://tanzu.academy/" target="_blank">Tanzu Academy (free courses)</a></li>
+            <li><a href="https://www.pluralsight.com/courses/vmware-tanzu-big-picture" target="_blank">Pluralsight: VMware Tanzu &mdash; The Big Picture</a></li>
+          </ul>
+
+          <div class="resource-category">Training Courses</div>
+          <ul class="resource-list">
+            <li>VMware vSphere with Tanzu: Deploy, Configure, Manage (VMVKDM) &mdash; 3-day official course</li>
+            <li>VMware Tanzu Kubernetes Grid: Install, Configure, Manage (VMTKGICM) &mdash; 4-day official course</li>
+            <li>VMware Learning Zone (on-demand videos, 24/7)</li>
+          </ul>
+
+          <div class="resource-category">Lenovo-Specific Resources</div>
+          <ul class="resource-list">
+            <li><a href="https://lenovopress.lenovo.com/software/alliances/vmware" target="_blank">Lenovo Press VMware Alliance</a></li>
+            <li><a href="https://lenovopress.lenovo.com/lp1581-deployment-guide-vmware-cloud-foundation-on-lenovo-thinkagile-vx-fx" target="_blank">VCF on ThinkAgile VX/FX Deployment Guide</a></li>
+            <li><a href="https://lenovopress.lenovo.com/lp2248.pdf" target="_blank">VCF 9.0 on ThinkAgile VX (PDF)</a></li>
+            <li><a href="https://lenovopress.lenovo.com/lp1265-vmware-software-solution-product-guide" target="_blank">VMware Software Solution Product Guide</a></li>
+          </ul>
+
+          <div class="resource-category">Industry Coverage (KubeCon EU 2026)</div>
+          <ul class="resource-list">
+            <li><a href="https://www.sdxcentral.com/news/broadcom-updates-vmwares-kubernetes-service-boasts-of-open-source-backing/" target="_blank">SDxCentral: Broadcom updates VKS, boasts open-source backing</a></li>
+            <li><a href="https://siliconangle.com/2026/03/23/broadcom-expands-kubernetes-support-vks-upgrades-open-source-contributions-new-partnerships/" target="_blank">SiliconANGLE: Broadcom expands K8s support</a></li>
+            <li><a href="https://www.techzine.eu/news/infrastructure/139783/broadcom-ships-vks-3-6-and-moves-velero-to-cncf-sandbox/" target="_blank">Techzine: Broadcom ships VKS 3.6, Velero to CNCF</a></li>
+            <li><a href="https://news.broadcom.com/news/2026-kubernetes-ecosystem" target="_blank">Broadcom Press Release</a></li>
+          </ul>
+
+          <div class="resource-category">Certifications</div>
+          <ul class="resource-list">
+            <li>VMware Certified Professional &mdash; Tanzu for Kubernetes Operations (VCP-TKO 2024)</li>
+            <li>VMware Learning Zone for on-demand exam prep</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 9: Study Plan ===== -->
+    <div class="section" id="study-plan" data-type="hands-on">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128203;</span>
+        <h2>3-Day Study Plan</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <div class="study-plan" id="studyPlan">
+
+            <div class="study-day" data-day="1">
+              <h4>Day 1: Foundation (4&ndash;6 hours) <span class="day-progress" id="day1Progress">0/8</span></h4>
+              <div class="progress-bar-container"><div class="progress-bar" id="day1Bar" style="width:0%"></div></div>
+              <div class="check-item"><input type="checkbox" id="d1t1" data-day="1"><label for="d1t1">Read the "WTF is VKS" section on this page</label></div>
+              <div class="check-item"><input type="checkbox" id="d1t2" data-day="1"><label for="d1t2">Read mpoore.io Supervisor + VKS intro blog</label></div>
+              <div class="check-item"><input type="checkbox" id="d1t3" data-day="1"><label for="d1t3">Read VKS 3.6 GA announcement blog</label></div>
+              <div class="check-item"><input type="checkbox" id="d1t4" data-day="1"><label for="d1t4">Read TuneDProfile deep-dive blog</label></div>
+              <div class="check-item"><input type="checkbox" id="d1t5" data-day="1"><label for="d1t5">Read RHEL 9 BYOI blog</label></div>
+              <div class="check-item"><input type="checkbox" id="d1t6" data-day="1"><label for="d1t6">Watch Istio on VKS YouTube walkthrough</label></div>
+              <div class="check-item"><input type="checkbox" id="d1t7" data-day="1"><label for="d1t7">Browse Tanzu Academy for available free courses</label></div>
+              <div class="check-item"><input type="checkbox" id="d1t8" data-day="1"><label for="d1t8">Review VKS release notes for 3.6</label></div>
+            </div>
+
+            <div class="study-day" data-day="2">
+              <h4>Day 2: Lenovo Context + Hands-On (4&ndash;6 hours) <span class="day-progress" id="day2Progress">0/8</span></h4>
+              <div class="progress-bar-container"><div class="progress-bar" id="day2Bar" style="width:0%"></div></div>
+              <div class="check-item"><input type="checkbox" id="d2t1" data-day="2"><label for="d2t1">Read Lenovo Press VCF 9.0 on ThinkAgile VX article</label></div>
+              <div class="check-item"><input type="checkbox" id="d2t2" data-day="2"><label for="d2t2">Skim the VCF on ThinkAgile VX deployment guide</label></div>
+              <div class="check-item"><input type="checkbox" id="d2t3" data-day="2"><label for="d2t3">Read William Lam's VCF 9 VKS lab walkthrough</label></div>
+              <div class="check-item"><input type="checkbox" id="d2t4" data-day="2"><label for="d2t4">Read Leaha's VKS configuration guide</label></div>
+              <div class="check-item"><input type="checkbox" id="d2t5" data-day="2"><label for="d2t5">Read Bob Bauer's VKS upgrade lifecycle article</label></div>
+              <div class="check-item"><input type="checkbox" id="d2t6" data-day="2"><label for="d2t6">Practice kubectl commands against a local K8s cluster (k3s/kind)</label></div>
+              <div class="check-item"><input type="checkbox" id="d2t7" data-day="2"><label for="d2t7">Practice writing Cluster API v1beta1 YAML manifests</label></div>
+              <div class="check-item"><input type="checkbox" id="d2t8" data-day="2"><label for="d2t8">Review the competitive positioning section</label></div>
+            </div>
+
+            <div class="study-day" data-day="3">
+              <h4>Day 3: Customer-Ready Polish (3&ndash;4 hours) <span class="day-progress" id="day3Progress">0/6</span></h4>
+              <div class="progress-bar-container"><div class="progress-bar" id="day3Bar" style="width:0%"></div></div>
+              <div class="check-item"><input type="checkbox" id="d3t1" data-day="3"><label for="d3t1">Memorize the FAQ section &mdash; practice answering out loud</label></div>
+              <div class="check-item"><input type="checkbox" id="d3t2" data-day="3"><label for="d3t2">Review the VKS version history and upgrade model</label></div>
+              <div class="check-item"><input type="checkbox" id="d3t3" data-day="3"><label for="d3t3">Study the Lenovo hardware lineup (VX630, VX650, XClarity)</label></div>
+              <div class="check-item"><input type="checkbox" id="d3t4" data-day="3"><label for="d3t4">Prepare your own notes on customer-specific questions</label></div>
+              <div class="check-item"><input type="checkbox" id="d3t5" data-day="3"><label for="d3t5">Run through a mock customer conversation with a colleague</label></div>
+              <div class="check-item"><input type="checkbox" id="d3t6" data-day="3"><label for="d3t6">Bookmark all key docs for quick reference during calls</label></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 10: Glossary ===== -->
+    <div class="section" id="glossary" data-type="reference">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128214;</span>
+        <h2>Glossary</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+
+          <div class="glossary-filter">
+            <input type="text" id="glossaryFilter" placeholder="Filter glossary terms..." aria-label="Filter glossary">
+          </div>
+
+          <div class="table-wrapper">
+            <table id="glossaryTable">
+              <thead>
+                <tr><th>Term</th><th>Definition</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>VKS</strong></td><td>vSphere Kubernetes Service &mdash; the K8s runtime in VCF</td></tr>
+                <tr><td><strong>VKr</strong></td><td>vSphere Kubernetes release &mdash; a specific K8s version packaged for VKS</td></tr>
+                <tr><td><strong>TKC</strong></td><td>TanzuKubernetesCluster &mdash; deprecated API, being replaced by Cluster API</td></tr>
+                <tr><td><strong>TKr</strong></td><td>Tanzu Kubernetes release &mdash; old name for VKr</td></tr>
+                <tr><td><strong>TKGs</strong></td><td>Tanzu Kubernetes Grid Service &mdash; old name for VKS</td></tr>
+                <tr><td><strong>Supervisor</strong></td><td>The K8s control plane built into vSphere that manages VKS clusters</td></tr>
+                <tr><td><strong>vSphere Namespace</strong></td><td>Resource boundary in Supervisor with RBAC, quotas, storage policies</td></tr>
+                <tr><td><strong>Cluster API</strong></td><td>Open-source project (CAPI) for declarative K8s cluster lifecycle</td></tr>
+                <tr><td><strong>ClusterClass</strong></td><td>A CAPI template defining cluster shape and configuration options</td></tr>
+                <tr><td><strong>VCF</strong></td><td>VMware Cloud Foundation &mdash; the full-stack private cloud platform</td></tr>
+                <tr><td><strong>VVF</strong></td><td>VMware vSphere Foundation &mdash; simplified edition (no NSX, limited features)</td></tr>
+                <tr><td><strong>NSX</strong></td><td>VMware's network virtualization platform (required for vSphere Pods)</td></tr>
+                <tr><td><strong>Avi</strong></td><td>VMware's advanced load balancer (NSX ALB)</td></tr>
+                <tr><td><strong>vSAN</strong></td><td>VMware's software-defined storage (ESA = Express Storage Architecture)</td></tr>
+                <tr><td><strong>CNS</strong></td><td>Cloud Native Storage &mdash; vSphere storage integration for K8s persistent volumes</td></tr>
+                <tr><td><strong>Antrea</strong></td><td>Default CNI plugin in VKS (open-source, VMware-maintained)</td></tr>
+                <tr><td><strong>Calico</strong></td><td>Alternative CNI plugin (Tigera), now validated for VKS 3.6</td></tr>
+                <tr><td><strong>TuneDProfile</strong></td><td>VKS 3.6 CRD for declarative OS/kernel tuning per node pool</td></tr>
+                <tr><td><strong>ImageBaker</strong></td><td>VKS 3.6 tool for building custom node OS images (replaces Image Builder)</td></tr>
+                <tr><td><strong>Spherelet</strong></td><td>ESXi component that runs vSphere Pods directly on the hypervisor</td></tr>
+                <tr><td><strong>XClarity</strong></td><td>Lenovo's centralized infrastructure management platform</td></tr>
+                <tr><td><strong>ThinkAgile VX</strong></td><td>Lenovo's co-engineered HCI appliance for VCF</td></tr>
+                <tr><td><strong>TruScale</strong></td><td>Lenovo's pay-as-you-go consumption model</td></tr>
+                <tr><td><strong>Velero</strong></td><td>Open-source K8s backup/recovery tool (moving to CNCF Sandbox)</td></tr>
+                <tr><td><strong>Standard Packages</strong></td><td>Curated K8s add-on packages validated for VKS (Istio, cert-manager, etc.)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      Built by VMware TAMs, for VMware TAMs. Not an official Broadcom/VMware resource.<br>
+      Content based on publicly available documentation as of April 2026.
+    </footer>
+
+  </div><!-- /content-area -->
+</div><!-- /main-content -->
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== Theme Toggle =====
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+  const html = document.documentElement;
+
+  function setTheme(theme) {
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem('vks-theme', theme);
+    themeIcon.textContent = theme === 'dark' ? '\u263E' : '\u2600';
+  }
+
+  const savedTheme = localStorage.getItem('vks-theme') || 'dark';
+  setTheme(savedTheme);
+
+  themeToggle.addEventListener('click', function() {
+    setTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+
+  // ===== Sidebar Toggle (mobile) =====
+  const hamburger = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+
+  function toggleSidebar() {
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('active');
+  }
+
+  hamburger.addEventListener('click', toggleSidebar);
+  overlay.addEventListener('click', toggleSidebar);
+
+  // Close sidebar on nav click (mobile)
+  document.querySelectorAll('#sidebarNav a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      if (window.innerWidth <= 1024) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      }
+    });
+  });
+
+  // ===== Collapsible Sections =====
+  document.querySelectorAll('.section-header').forEach(function(header) {
+    header.addEventListener('click', function() {
+      var body = header.nextElementSibling;
+      var isExpanded = header.classList.contains('expanded');
+
+      if (isExpanded) {
+        header.classList.remove('expanded');
+        header.setAttribute('aria-expanded', 'false');
+        body.classList.remove('expanded');
+      } else {
+        header.classList.add('expanded');
+        header.setAttribute('aria-expanded', 'true');
+        body.classList.add('expanded');
+      }
+    });
+
+    header.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        header.click();
+      }
+    });
+  });
+
+  // ===== Expand/Collapse All =====
+  var expandAllBtn = document.getElementById('expandAllBtn');
+  var allExpanded = true;
+
+  expandAllBtn.addEventListener('click', function() {
+    allExpanded = !allExpanded;
+    expandAllBtn.textContent = allExpanded ? 'Collapse All' : 'Expand All';
+    document.querySelectorAll('.section-header').forEach(function(header) {
+      var body = header.nextElementSibling;
+      if (allExpanded) {
+        header.classList.add('expanded');
+        header.setAttribute('aria-expanded', 'true');
+        body.classList.add('expanded');
+      } else {
+        header.classList.remove('expanded');
+        header.setAttribute('aria-expanded', 'false');
+        body.classList.remove('expanded');
+      }
+    });
+  });
+
+  // ===== FAQ Accordions =====
+  document.querySelectorAll('.faq-question').forEach(function(q) {
+    q.addEventListener('click', function() {
+      var answer = q.nextElementSibling;
+      var isExpanded = q.classList.contains('expanded');
+
+      if (isExpanded) {
+        q.classList.remove('expanded');
+        q.setAttribute('aria-expanded', 'false');
+        answer.classList.remove('expanded');
+      } else {
+        q.classList.add('expanded');
+        q.setAttribute('aria-expanded', 'true');
+        answer.classList.add('expanded');
+      }
+    });
+
+    q.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        q.click();
+      }
+    });
+  });
+
+  // ===== Copy to Clipboard =====
+  document.querySelectorAll('.copy-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var code = btn.closest('.code-block').querySelector('code');
+      var text = code.textContent;
+
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+  });
+
+  // ===== Study Plan Checklist (localStorage) =====
+  var checkboxes = document.querySelectorAll('#studyPlan input[type="checkbox"]');
+  var dayTotals = { '1': 8, '2': 8, '3': 6 };
+
+  function loadChecklist() {
+    var saved = JSON.parse(localStorage.getItem('vks-checklist') || '{}');
+    checkboxes.forEach(function(cb) {
+      if (saved[cb.id]) cb.checked = true;
+    });
+    updateProgress();
+  }
+
+  function saveChecklist() {
+    var data = {};
+    checkboxes.forEach(function(cb) {
+      if (cb.checked) data[cb.id] = true;
+    });
+    localStorage.setItem('vks-checklist', JSON.stringify(data));
+  }
+
+  function updateProgress() {
+    [1, 2, 3].forEach(function(day) {
+      var checks = document.querySelectorAll('input[data-day="' + day + '"]');
+      var done = 0;
+      checks.forEach(function(c) { if (c.checked) done++; });
+      var total = dayTotals[day];
+      var pct = Math.round((done / total) * 100);
+      document.getElementById('day' + day + 'Progress').textContent = done + '/' + total;
+      document.getElementById('day' + day + 'Bar').style.width = pct + '%';
+    });
+  }
+
+  checkboxes.forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      saveChecklist();
+      updateProgress();
+    });
+  });
+
+  loadChecklist();
+
+  // ===== Glossary Filter =====
+  var glossaryFilter = document.getElementById('glossaryFilter');
+  var glossaryRows = document.querySelectorAll('#glossaryTable tbody tr');
+
+  glossaryFilter.addEventListener('input', function() {
+    var term = glossaryFilter.value.toLowerCase();
+    glossaryRows.forEach(function(row) {
+      var text = row.textContent.toLowerCase();
+      row.style.display = text.includes(term) ? '' : 'none';
+    });
+  });
+
+  // ===== Search =====
+  var searchInput = document.getElementById('searchInput');
+  var sections = document.querySelectorAll('.section');
+  var noResults = document.getElementById('noResults');
+
+  // Keyboard shortcut: / to focus search
+  document.addEventListener('keydown', function(e) {
+    if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      searchInput.focus();
+    }
+    if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.value = '';
+      searchInput.dispatchEvent(new Event('input'));
+      searchInput.blur();
+    }
+  });
+
+  searchInput.addEventListener('input', function() {
+    var query = searchInput.value.toLowerCase().trim();
+
+    if (!query) {
+      sections.forEach(function(s) { s.classList.remove('search-hidden'); });
+      noResults.style.display = 'none';
+      return;
+    }
+
+    var visible = 0;
+    sections.forEach(function(s) {
+      var text = s.textContent.toLowerCase();
+      if (text.includes(query)) {
+        s.classList.remove('search-hidden');
+        // Expand matched section
+        var header = s.querySelector('.section-header');
+        var body = s.querySelector('.section-body');
+        if (header && body) {
+          header.classList.add('expanded');
+          header.setAttribute('aria-expanded', 'true');
+          body.classList.add('expanded');
+        }
+        visible++;
+      } else {
+        s.classList.add('search-hidden');
+      }
+    });
+
+    noResults.style.display = visible === 0 ? 'block' : 'none';
+  });
+
+  // ===== Scroll Spy for Sidebar Nav =====
+  var navLinks = document.querySelectorAll('#sidebarNav a');
+  var sectionIds = [];
+  navLinks.forEach(function(link) {
+    sectionIds.push(link.getAttribute('href').substring(1));
+  });
+
+  function updateScrollSpy() {
+    var scrollPos = window.scrollY + 120;
+    var current = '';
+
+    sectionIds.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && el.offsetTop <= scrollPos) {
+        current = id;
+      }
+    });
+
+    navLinks.forEach(function(link) {
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+
+  var scrollTimeout;
+  window.addEventListener('scroll', function() {
+    if (scrollTimeout) cancelAnimationFrame(scrollTimeout);
+    scrollTimeout = requestAnimationFrame(updateScrollSpy);
+  });
+
+  updateScrollSpy();
+
+  // ===== Mobile: Collapse sections by default =====
+  if (window.innerWidth <= 1024) {
+    document.querySelectorAll('.section-header').forEach(function(header, index) {
+      if (index > 0) { // Keep first section open
+        var body = header.nextElementSibling;
+        header.classList.remove('expanded');
+        header.setAttribute('aria-expanded', 'false');
+        body.classList.remove('expanded');
+      }
+    });
+    allExpanded = false;
+    expandAllBtn.textContent = 'Expand All';
+  }
+
+})();
+</script>
+</body>
+</html>
