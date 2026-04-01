@@ -860,13 +860,19 @@ mark {
     <a href="#wtf-vks"><span class="nav-number">01</span> WTF is VKS?</a>
     <a href="#vks-36"><span class="nav-number">02</span> VKS 3.6 What's New</a>
     <a href="#version-history"><span class="nav-number">03</span> Version History</a>
-    <a href="#lenovo-stack"><span class="nav-number">04</span> Lenovo Stack</a>
-    <a href="#hands-on"><span class="nav-number">05</span> Hands-On Workflows</a>
-    <a href="#competitive"><span class="nav-number">06</span> Competitive Positioning</a>
-    <a href="#faq"><span class="nav-number">07</span> Customer FAQ</a>
-    <a href="#resources"><span class="nav-number">08</span> Learning Resources</a>
-    <a href="#study-plan"><span class="nav-number">09</span> 3-Day Study Plan</a>
-    <a href="#glossary"><span class="nav-number">10</span> Glossary</a>
+    <a href="#breaking-changes"><span class="nav-number">04</span> Breaking Changes</a>
+    <a href="#lenovo-stack"><span class="nav-number">05</span> Lenovo Stack</a>
+    <a href="#sizing"><span class="nav-number">06</span> Architecture Sizing</a>
+    <a href="#networking"><span class="nav-number">07</span> Networking Decision Tree</a>
+    <a href="#hands-on"><span class="nav-number">08</span> Hands-On Workflows</a>
+    <a href="#tkc-migration"><span class="nav-number">09</span> TKC Migration Playbook</a>
+    <a href="#troubleshooting"><span class="nav-number">10</span> Troubleshooting Runbook</a>
+    <a href="#competitive"><span class="nav-number">11</span> Competitive Positioning</a>
+    <a href="#discovery"><span class="nav-number">12</span> Customer Discovery</a>
+    <a href="#faq"><span class="nav-number">13</span> Customer FAQ</a>
+    <a href="#resources"><span class="nav-number">14</span> Learning Resources</a>
+    <a href="#study-plan"><span class="nav-number">15</span> 3-Day Study Plan</a>
+    <a href="#glossary"><span class="nav-number">16</span> Glossary</a>
   </nav>
 </aside>
 
@@ -896,6 +902,7 @@ mark {
       <h1>VKS/Tanzu Field Guide</h1>
       <p class="subtitle">TAM rapid-enablement playbook for Lenovo accounts</p>
       <p class="meta">Last updated: April 2026 &middot; VKS 3.6 &middot; VCF 9.0</p>
+      <p class="meta" style="margin-top: 6px;">by <strong style="color: var(--accent-teal);">Pranav Patel</strong></p>
     </div>
 
     <!-- Search No Results -->
@@ -1171,7 +1178,78 @@ mark {
       </div>
     </div>
 
-    <!-- ===== SECTION 4: Lenovo Stack ===== -->
+    <!-- ===== SECTION 4: Breaking Changes ===== -->
+    <div class="section" id="breaking-changes" data-type="warning">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128165;</span>
+        <h2>What Broke in the Upgrade &mdash; Breaking Changes by Version</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+          <p>No marketing language. Just what will bite you if you don't plan for it.</p>
+
+          <h3>VKS 3.2 &rarr; 3.3</h3>
+          <div class="callout callout-critical">
+            <strong>&#9888; TKGs &rarr; VKS rebrand</strong>
+            All documentation, CLI output, and API references changed naming. Scripts referencing "tanzu" or "tkg" in CLI commands may break. Update automation and runbooks.
+          </div>
+          <ul>
+            <li><strong>TKC API officially deprecated</strong> &mdash; still works, but no new features. Migration tooling introduced.</li>
+            <li><strong>TKr &rarr; VKr rename</strong> &mdash; <code>kubectl get tanzukubernetesreleases</code> still works as alias, but new docs reference <code>kubernetesreleases</code></li>
+            <li><strong>FIPS mode introduced</strong> &mdash; enabling FIPS requires Ubuntu Pro subscription. Photon OS does not support FIPS mode.</li>
+            <li><strong>Scale-to-zero</strong> &mdash; new capability, but scaling back from zero can take 5-10 minutes for cold start. Set customer expectations.</li>
+            <li><strong>gMSA (Group Managed Service Accounts)</strong> &mdash; requires Active Directory integration. Windows node pools only.</li>
+          </ul>
+
+          <h3>VKS 3.3 &rarr; 3.4</h3>
+          <ul>
+            <li><strong>Istio service mesh</strong> added as standard package &mdash; if customers have manual Istio installs, they may conflict with the managed package. Assess before upgrading.</li>
+            <li><strong>K8s 1.32 minimum</strong> &mdash; clusters on 1.31 must upgrade before moving to VKS 3.4</li>
+          </ul>
+
+          <h3>VKS 3.4 &rarr; 3.5</h3>
+          <ul>
+            <li>Incremental release, no major breaking changes</li>
+            <li><strong>K8s 1.34 introduced</strong> &mdash; standard deprecation of older beta APIs applies</li>
+          </ul>
+
+          <h3>VKS 3.5 &rarr; 3.6</h3>
+          <div class="callout callout-critical">
+            <strong>&#9888; VKr 1.31 DROPPED</strong>
+            VKS 3.6 removes support for VKr 1.31. ALL clusters must be on 1.32+ BEFORE upgrading the VKS version. If you skip this, the upgrade will fail and you're stuck in a partial state.
+          </div>
+          <ul>
+            <li><strong>ClusterBootstrap for CNI deprecated</strong> for VKr 1.35+ &mdash; use <code>bootstrapAddons</code> variable instead. Existing clusters on 1.34 and below are unaffected until they upgrade.</li>
+            <li><strong>NGINX Ingress Controller deprecated</strong> upstream in K8s 1.35 &mdash; customers must migrate to Avi Gateway API or F5 BIG-IP CIS. Existing NGINX deployments still work but won't receive updates.</li>
+            <li><strong>kube-proxy switches to nftables</strong> &mdash; if customers have iptables-based custom rules or monitoring, these will break. Audit firewall rules before upgrading to 1.35.</li>
+            <li><strong>Image Builder &rarr; ImageBaker</strong> &mdash; old Image Builder workflow no longer supported for new images. Existing images still work.</li>
+            <li><strong>Supervisor must be on K8s 1.30+</strong> &mdash; check Supervisor version before attempting VKS 3.6 registration.</li>
+          </ul>
+
+          <h3>Pre-Upgrade Checklist (Use This Every Time)</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># 1. Check current VKr versions across all clusters</span>
+kubectl get clusters -A -o custom-columns=NAME:.metadata.name,NS:.metadata.namespace,VERSION:.spec.topology.version
+
+<span class="comment"># 2. Check Supervisor version</span>
+kubectl get nodes -o wide  <span class="comment"># Run from Supervisor context</span>
+
+<span class="comment"># 3. Check for TKC API usage (must be zero before 1.33+)</span>
+kubectl get tkc -A
+
+<span class="comment"># 4. Check for PDBs that could block rolling updates</span>
+kubectl get pdb -A
+
+<span class="comment"># 5. Check SystemCheckSucceeded condition (VKS 3.6)</span>
+kubectl get cluster &lt;name&gt; -n &lt;ns&gt; -o jsonpath='{.status.conditions[?(@.type=="SystemCheckSucceeded")]}'</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 5: Lenovo Stack ===== -->
     <div class="section" id="lenovo-stack" data-type="customer">
       <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
         <span class="section-icon">&#127981;</span>
@@ -1229,7 +1307,238 @@ mark {
       </div>
     </div>
 
-    <!-- ===== SECTION 5: Hands-On ===== -->
+    <!-- ===== SECTION 6: Architecture Sizing ===== -->
+    <div class="section" id="sizing" data-type="architecture">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128208;</span>
+        <h2>Architecture Sizing Guide</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+          <p>Common sizing patterns for VKS clusters on ThinkAgile VX. Use these as starting points for customer conversations &mdash; actual sizing depends on workload profiling.</p>
+
+          <h3>Supervisor Requirements (Fixed Overhead)</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Component</th><th>vCPUs</th><th>Memory</th><th>Storage</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Supervisor CP VMs (x3)</strong></td><td>4 each</td><td>16 GB each</td><td>160 GB each</td><td>Always 3 VMs. Non-negotiable.</td></tr>
+                <tr><td><strong>Total Supervisor overhead</strong></td><td>12</td><td>48 GB</td><td>480 GB</td><td>Per vSphere cluster with Supervisor enabled</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Workload Cluster Sizing by Use Case</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Use Case</th><th>CP Nodes</th><th>Worker Nodes</th><th>VM Class</th><th>Per-Worker Spec</th><th>Total Workers</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Dev/Test</strong><br><small>CI/CD, staging, experiments</small></td>
+                  <td>1 or 3</td>
+                  <td>2&ndash;3</td>
+                  <td>best-effort-medium</td>
+                  <td>4 vCPU, 8 GB RAM</td>
+                  <td>~40 pods</td>
+                </tr>
+                <tr>
+                  <td><strong>Production &mdash; Stateless</strong><br><small>Web apps, APIs, microservices</small></td>
+                  <td>3</td>
+                  <td>3&ndash;6</td>
+                  <td>best-effort-large</td>
+                  <td>8 vCPU, 16 GB RAM</td>
+                  <td>~100&ndash;200 pods</td>
+                </tr>
+                <tr>
+                  <td><strong>Production &mdash; Stateful</strong><br><small>Databases, Kafka, Elasticsearch</small></td>
+                  <td>3</td>
+                  <td>3&ndash;5 (dedicated pool)</td>
+                  <td>best-effort-xlarge</td>
+                  <td>16 vCPU, 32 GB RAM</td>
+                  <td>~50 pods + PVCs</td>
+                </tr>
+                <tr>
+                  <td><strong>AI/ML Training</strong><br><small>GPU workloads, model training</small></td>
+                  <td>3</td>
+                  <td>2&ndash;4 (GPU pool)</td>
+                  <td>custom (GPU passthrough)</td>
+                  <td>16+ vCPU, 64+ GB RAM, 1&ndash;2 GPUs</td>
+                  <td>Workload-dependent</td>
+                </tr>
+                <tr>
+                  <td><strong>Edge / Remote Office</strong><br><small>Minimal footprint, limited hardware</small></td>
+                  <td>1</td>
+                  <td>2</td>
+                  <td>best-effort-small</td>
+                  <td>2 vCPU, 4 GB RAM</td>
+                  <td>~20 pods</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>ThinkAgile VX Capacity Planning</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Hardware</th><th>Typical Config</th><th>Usable for VKS</th><th>Supports</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>VX630 V3 (1U)</strong></td>
+                  <td>2x Xeon, 512 GB RAM, 12 NVMe</td>
+                  <td>~400 GB RAM after vSAN/Supervisor</td>
+                  <td>~25&ndash;30 worker VMs (medium class)</td>
+                </tr>
+                <tr>
+                  <td><strong>VX650 V3 (2U)</strong></td>
+                  <td>2x Xeon, 1 TB RAM, 24 NVMe</td>
+                  <td>~850 GB RAM after overhead</td>
+                  <td>~50&ndash;55 worker VMs (medium class)</td>
+                </tr>
+                <tr>
+                  <td><strong>SR675 V3 (3U, GPU)</strong></td>
+                  <td>2x Xeon, 1 TB RAM, 8x NVIDIA GPU</td>
+                  <td>~800 GB RAM + 8 GPUs</td>
+                  <td>4&ndash;8 GPU worker VMs</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="callout callout-info">
+            <strong>Rule of thumb:</strong> For a 4-node ThinkAgile VX650 V3 cluster, after vSAN overhead (~25%) and Supervisor VMs, you can comfortably run 2&ndash;3 production VKS clusters with 3+5 node topology each, plus a dev/test cluster. Always reserve 1 host worth of capacity for HA failover (N+1).
+          </div>
+
+          <h3>Storage Considerations</h3>
+          <ul>
+            <li><strong>vSAN ESA</strong> &mdash; no RAID groups, all NVMe. Better performance for etcd and stateful workloads.</li>
+            <li><strong>PVC sizing</strong> &mdash; default StorageClass uses vSAN. Budget 10&ndash;50 GB per PVC for databases, 1&ndash;5 GB for app state.</li>
+            <li><strong>etcd</strong> &mdash; VKS control plane etcd runs on the CP VMs. For clusters with >500 resources, ensure CP VMs use a high-IOPS storage policy.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 7: Networking Decision Tree ===== -->
+    <div class="section" id="networking" data-type="architecture">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128268;</span>
+        <h2>Networking Decision Tree</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+          <p>Networking is the #1 source of confusion in VKS deployments. Use this to guide customer conversations.</p>
+
+          <h3>Step 1: What's Your VCF Edition?</h3>
+          <div class="arch-diagram" role="img" aria-label="VCF Edition Networking Decision">
+<span class="layer layer-vcf">VCF (Full) &mdash; Includes NSX</span>
+<span class="layer layer-supervisor">  &#8627; NSX networking for Supervisor</span>
+<span class="layer layer-workload">  &#8627; Supports vSphere Pods (native pods on ESXi)</span>
+<span class="layer layer-workload">  &#8627; Full Antrea or third-party CNI for workload clusters</span>
+
+<span class="layer layer-vcf">VVF (vSphere Foundation) &mdash; No NSX</span>
+<span class="layer layer-hw">  &#8627; vSphere Distributed Switch (vDS) networking</span>
+<span class="layer layer-hw">  &#8627; NO vSphere Pods</span>
+<span class="layer layer-hw">  &#8627; Avi or HAProxy for load balancing</span></div>
+
+          <h3>Step 2: CNI Selection (VKS 3.6 / VKr 1.35+)</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>CNI</th><th>Best For</th><th>Pros</th><th>Cons</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Antrea</strong> (default)</td>
+                  <td>Most deployments</td>
+                  <td>Built-in, VMware-supported, NSX integration, network policy, Traceflow</td>
+                  <td>Less ecosystem tooling than Calico</td>
+                </tr>
+                <tr>
+                  <td><strong>Calico (Tigera)</strong></td>
+                  <td>Complex network policy, multi-cloud</td>
+                  <td>Rich policy engine, eBPF mode, large community</td>
+                  <td>Requires Tigera support contract for enterprise</td>
+                </tr>
+                <tr>
+                  <td><strong>Custom (BYOCNI)</strong></td>
+                  <td>Specific vendor requirements</td>
+                  <td>Full flexibility</td>
+                  <td>Customer responsible for lifecycle, less VMware support</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Step 3: Ingress / Load Balancing</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Solution</th><th>Status</th><th>Best For</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Avi Gateway API</strong></td>
+                  <td>Recommended</td>
+                  <td>New deployments, VCF-native</td>
+                  <td>Native VKS integration, replaces NGINX. Use this for greenfield.</td>
+                </tr>
+                <tr>
+                  <td><strong>NGINX Ingress</strong></td>
+                  <td>Deprecated (K8s 1.35)</td>
+                  <td>Legacy only</td>
+                  <td>Still works but no updates. Plan migration to Avi.</td>
+                </tr>
+                <tr>
+                  <td><strong>F5 BIG-IP CIS</strong></td>
+                  <td>Validated (VKS 3.6)</td>
+                  <td>Existing F5 customers</td>
+                  <td>New partnership. Good for customers already invested in F5.</td>
+                </tr>
+                <tr>
+                  <td><strong>Kong Gateway</strong></td>
+                  <td>Validated (VKS 3.6)</td>
+                  <td>API-first architectures</td>
+                  <td>Strong API gateway features, rate limiting, auth.</td>
+                </tr>
+                <tr>
+                  <td><strong>HAProxy</strong></td>
+                  <td>Supported</td>
+                  <td>VVF (no NSX) deployments</td>
+                  <td>Basic L4 load balancing. No L7 features.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Step 4: Service Mesh (Optional)</h3>
+          <ul>
+            <li><strong>Istio</strong> &mdash; available as a VKS standard package since VKS 3.4. Managed lifecycle. Use for mTLS, traffic management, observability.</li>
+            <li><strong>No mesh</strong> &mdash; perfectly fine for most workloads. Don't add complexity unless the customer has specific requirements (compliance mTLS, canary deployments, multi-cluster routing).</li>
+          </ul>
+
+          <h3>Quick Decision Flowchart</h3>
+          <div class="arch-diagram" role="img" aria-label="Networking Quick Decision Flowchart">
+Customer has NSX? ──┬── YES ──&gt; Antrea (default) + Avi Gateway API
+                    │          + vSphere Pods available
+                    │
+                    └── NO ───&gt; Antrea (default) + HAProxy or Avi
+                               + NO vSphere Pods
+
+Customer has F5? ───┬── YES ──&gt; Consider F5 BIG-IP CIS (validated)
+                    └── NO ───&gt; Avi Gateway API (recommended)
+
+Customer needs complex network policy? ──┬── YES ──&gt; Evaluate Calico
+                                         └── NO ───&gt; Antrea is fine
+
+Customer needs API gateway? ──┬── YES ──&gt; Kong Gateway (validated)
+                              └── NO ───&gt; Standard ingress is fine</div>
+
+          <div class="callout callout-warning">
+            <strong>&#9888; Key gotcha:</strong> If a customer is upgrading to VKr 1.35+, CNI must now be configured via <code>bootstrapAddons</code> variable in the Cluster spec, not <code>ClusterBootstrap</code>. Existing clusters on 1.34 and below are unaffected but will need to change when they upgrade.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 8: Hands-On ===== -->
     <div class="section" id="hands-on" data-type="hands-on">
       <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
         <span class="section-icon">&#128187;</span>
@@ -1350,7 +1659,290 @@ kubectl get tanzukubernetesreleases</code></pre>
       </div>
     </div>
 
-    <!-- ===== SECTION 6: Competitive Positioning ===== -->
+    <!-- ===== SECTION 9: TKC Migration Playbook ===== -->
+    <div class="section" id="tkc-migration" data-type="hands-on">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128295;</span>
+        <h2>TKC &rarr; Cluster API Migration Playbook</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+          <div class="callout callout-critical">
+            <strong>&#9888; This is the #1 action item for any existing VKS/TKGs customer.</strong> TKC API is deprecated. Clusters on TKC cannot upgrade to K8s v1.33+. Every customer conversation should include: "Are you still on TKC?"
+          </div>
+
+          <h3>Pre-Migration Assessment</h3>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># 1. Identify ALL TKC clusters across all namespaces</span>
+kubectl get tkc -A -o custom-columns=\
+  NAME:.metadata.name,\
+  NS:.metadata.namespace,\
+  VERSION:.spec.distribution.version,\
+  PHASE:.status.phase
+
+<span class="comment"># 2. Check if any TKC has Additional Trusted CA certs (known issue)</span>
+kubectl get tkc -A -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.settings.network.trust}{"\n"}{end}'
+
+<span class="comment"># 3. Verify VKS version supports migration (need 3.3+)</span>
+kubectl get supervisorservices vsphere-kubernetes-service -o jsonpath='{.status.version}'
+
+<span class="comment"># 4. Check current Cluster API resources (should be empty pre-migration)</span>
+kubectl get clusters -A</code></pre>
+          </div>
+
+          <h3>Migration Steps (Per Cluster)</h3>
+          <ol>
+            <li>
+              <strong>Backup the TKC manifest</strong>
+              <div class="code-block">
+                <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+                <pre><code>kubectl get tkc &lt;cluster-name&gt; -n &lt;namespace&gt; -o yaml &gt; tkc-backup-&lt;cluster-name&gt;.yaml</code></pre>
+              </div>
+            </li>
+            <li>
+              <strong>Backup workloads inside the cluster</strong>
+              <div class="code-block">
+                <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+                <pre><code><span class="comment"># Use Velero or kubectl to backup critical resources</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get all -A -o yaml &gt; workloads-backup.yaml</code></pre>
+              </div>
+            </li>
+            <li>
+              <strong>Initiate migration (VKS 3.3+ streamlined tooling)</strong>
+              <div class="code-block">
+                <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+                <pre><code><span class="comment"># The migration converts TKC resource to Cluster API v1beta1 in-place</span>
+<span class="comment"># Workloads continue running — this is a control plane migration, not a data plane migration</span>
+kubectl annotate tkc &lt;cluster-name&gt; -n &lt;namespace&gt; \
+  run.tanzu.vmware.com/migrate-to-clusterclass=true</code></pre>
+              </div>
+            </li>
+            <li>
+              <strong>Monitor migration progress</strong>
+              <div class="code-block">
+                <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+                <pre><code><span class="comment"># Watch for the Cluster API resource to appear</span>
+kubectl get cluster -n &lt;namespace&gt; -w
+
+<span class="comment"># Check conditions on the migrated cluster</span>
+kubectl get cluster &lt;cluster-name&gt; -n &lt;namespace&gt; -o yaml | grep -A 20 "conditions:"
+
+<span class="comment"># Verify the TKC resource is removed</span>
+kubectl get tkc -n &lt;namespace&gt;</code></pre>
+              </div>
+            </li>
+            <li>
+              <strong>Post-migration validation</strong>
+              <div class="code-block">
+                <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+                <pre><code><span class="comment"># Verify workloads are still running</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get pods -A
+
+<span class="comment"># Verify nodes are healthy</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get nodes
+
+<span class="comment"># Verify storage is intact</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get pvc -A
+
+<span class="comment"># Test a rolling restart of a non-critical deployment</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; rollout restart deployment/&lt;test-app&gt; -n &lt;ns&gt;</code></pre>
+              </div>
+            </li>
+          </ol>
+
+          <h3>Known Issues &amp; Workarounds</h3>
+          <div class="callout callout-warning">
+            <strong>&#9888; TKC with Additional Trusted CA certificates:</strong> Migration may fail if the TKC has custom CA certs configured. Fixed in VKS 3.3.3. If on 3.3.0&ndash;3.3.2, remove the trusted CA from the TKC spec before migrating, then re-add to the Cluster API resource after migration completes.
+          </div>
+          <ul>
+            <li><strong>Custom VM classes</strong> &mdash; ensure custom VM classes are available in the vSphere Namespace before migration</li>
+            <li><strong>Storage policies</strong> &mdash; verify storage policy names match between TKC and Cluster API specs</li>
+            <li><strong>Network policies</strong> &mdash; Antrea network policies migrate automatically, but custom Calico policies need manual review</li>
+          </ul>
+
+          <h3>Customer Communication Template</h3>
+          <div class="callout callout-info">
+            <strong>Suggested framing:</strong> "The TKC API migration is a control-plane-only change &mdash; your running workloads are not affected. Think of it like updating the management layer while your applications keep running. The migration typically takes 10&ndash;15 minutes per cluster, and VKS 3.3+ includes tooling that automates most of the process. We recommend scheduling this in a maintenance window for change management compliance, but there is no expected downtime."
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 10: Troubleshooting Runbook ===== -->
+    <div class="section" id="troubleshooting" data-type="warning">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#128679;</span>
+        <h2>Troubleshooting Runbook &mdash; Top 10 VKS Issues</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+          <p>The issues TAMs actually hit. Ranked by frequency.</p>
+
+          <h3>1. Supervisor Won't Enable</h3>
+          <h4>Symptoms:</h4>
+          <ul><li>Supervisor deployment stuck at "Configuring" in vCenter</li><li>Control plane VMs not powering on</li></ul>
+          <h4>Common Causes:</h4>
+          <ul>
+            <li><strong>Insufficient resources</strong> &mdash; need 12 vCPU, 48 GB RAM, 480 GB storage free on the cluster</li>
+            <li><strong>vDS configuration</strong> &mdash; Supervisor needs a dedicated portgroup with correct VLAN</li>
+            <li><strong>DNS/NTP mismatch</strong> &mdash; Supervisor VMs must resolve vCenter FQDN and have NTP sync</li>
+            <li><strong>Content library not synced</strong> &mdash; VKS images must be available in the subscribed content library</li>
+          </ul>
+          <h4>Debug:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># Check Supervisor VM status from vCenter MOB or PowerCLI</span>
+Get-VM -Name "SupervisorControlPlane*" | Select Name, PowerState, NumCpu, MemoryGB
+
+<span class="comment"># Check WCP (Workload Control Plane) service status</span>
+<span class="comment"># SSH to vCenter appliance:</span>
+vmon-cli --status wcp</code></pre>
+          </div>
+
+          <h3>2. Cluster Stuck in "Provisioning"</h3>
+          <h4>Symptoms:</h4>
+          <ul><li>Cluster created but never reaches "Running" phase</li><li>Machines stuck in "Provisioning" or "Pending"</li></ul>
+          <h4>Common Causes:</h4>
+          <ul>
+            <li><strong>VM class not bound to namespace</strong> &mdash; the specified vmClass must be assigned to the vSphere Namespace</li>
+            <li><strong>Storage policy mismatch</strong> &mdash; storageClass doesn't exist or isn't bound to the namespace</li>
+            <li><strong>VKr image not available</strong> &mdash; the specified K8s version image isn't in the content library</li>
+            <li><strong>IP exhaustion</strong> &mdash; no free IPs in the workload network range</li>
+          </ul>
+          <h4>Debug:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># Check cluster conditions</span>
+kubectl get cluster &lt;name&gt; -n &lt;ns&gt; -o yaml | grep -A 30 "conditions:"
+
+<span class="comment"># Check machine status</span>
+kubectl get machines -n &lt;ns&gt; -o wide
+
+<span class="comment"># Check available VM classes in the namespace</span>
+kubectl get virtualmachineclassbindings -n &lt;ns&gt;
+
+<span class="comment"># Check available storage classes</span>
+kubectl get storageclasses
+
+<span class="comment"># Check available VKr images</span>
+kubectl get kubernetesreleases</code></pre>
+          </div>
+
+          <h3>3. VKr Image Download Failures</h3>
+          <h4>Symptoms:</h4>
+          <ul><li>New K8s versions not appearing in <code>kubectl get kubernetesreleases</code></li><li>Content library sync errors</li></ul>
+          <h4>Fix:</h4>
+          <ul>
+            <li>Verify internet access from vCenter to <code>wp-content.broadcom.com</code></li>
+            <li>For air-gapped: manually download OVA from Broadcom support portal, import to local content library</li>
+            <li>Check content library sync status in vCenter &rarr; Content Libraries &rarr; Subscriptions</li>
+          </ul>
+
+          <h3>4. PDB Blocking Node Upgrades</h3>
+          <h4>Symptoms:</h4>
+          <ul><li>Rolling update stuck, nodes won't drain</li><li>Upgrade progress halted at "Draining node"</li></ul>
+          <h4>Fix:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># Identify blocking PDBs</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get pdb -A
+
+<span class="comment"># Check which PDBs have zero disruptions allowed</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get pdb -A -o jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.status.disruptionsAllowed}{"\n"}{end}'
+
+<span class="comment"># If safe, temporarily adjust PDB or scale up the deployment</span>
+<span class="comment"># so minAvailable is satisfied even with one pod draining</span></code></pre>
+          </div>
+
+          <h3>5. Certificate Expiry / Rotation Issues</h3>
+          <h4>Symptoms:</h4>
+          <ul><li>kubectl commands fail with TLS errors</li><li>Kubeconfig stops working after ~12 months</li></ul>
+          <h4>Fix:</h4>
+          <ul>
+            <li>VKS auto-rotates internal cluster certs, but kubeconfig tokens expire</li>
+            <li>Re-download kubeconfig from vCenter UI or re-run <code>kubectl-vsphere login</code></li>
+            <li>For Supervisor certs: check vCenter &rarr; Certificate Management</li>
+          </ul>
+
+          <h3>6. Persistent Volume Stuck in "Pending"</h3>
+          <h4>Symptoms:</h4>
+          <ul><li>PVC stays in "Pending" state indefinitely</li></ul>
+          <h4>Common Causes:</h4>
+          <ul>
+            <li><strong>Storage policy not bound</strong> to vSphere Namespace</li>
+            <li><strong>vSAN capacity</strong> &mdash; no free space</li>
+            <li><strong>CSI driver</strong> &mdash; check vsphere-csi-controller pods in kube-system</li>
+          </ul>
+          <h4>Debug:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code>kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; describe pvc &lt;pvc-name&gt; -n &lt;ns&gt;
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get pods -n kube-system | grep csi
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; logs -n kube-system deployment/vsphere-csi-controller</code></pre>
+          </div>
+
+          <h3>7. Webhook Blocking Upgrades (VKS 3.6 Detection)</h3>
+          <h4>Symptoms:</h4>
+          <ul><li><code>SystemCheckSucceeded</code> condition is False</li><li>Pre-upgrade check warns about admission webhooks</li></ul>
+          <h4>Fix:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># List all validating/mutating webhooks</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get validatingwebhookconfigurations
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get mutatingwebhookconfigurations
+
+<span class="comment"># Check which have failurePolicy: Fail (these block upgrades)</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get validatingwebhookconfigurations -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.webhooks[*].failurePolicy}{"\n"}{end}'</code></pre>
+          </div>
+
+          <h3>8. Node NotReady After Upgrade</h3>
+          <h4>Symptoms:</h4>
+          <ul><li>Worker nodes show "NotReady" after VKr upgrade</li></ul>
+          <h4>Fix:</h4>
+          <ul>
+            <li>Check kubelet logs on the node (via vCenter console or SSH if enabled)</li>
+            <li>Verify CNI pods are running: <code>kubectl get pods -n kube-system | grep antrea</code></li>
+            <li>If node is completely unresponsive, VKS will eventually replace it via MachineHealthCheck (default 5-minute timeout)</li>
+          </ul>
+
+          <h3>9. DNS Resolution Failures Inside Pods</h3>
+          <h4>Symptoms:</h4>
+          <ul><li>Pods can't resolve external or cluster-internal DNS</li></ul>
+          <h4>Fix:</h4>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># Check CoreDNS pods</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get pods -n kube-system -l k8s-app=kube-dns
+
+<span class="comment"># Test DNS from a debug pod</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; run dns-test --image=busybox --rm -it -- nslookup kubernetes.default
+
+<span class="comment"># Check CoreDNS configmap for upstream DNS</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; get configmap coredns -n kube-system -o yaml</code></pre>
+          </div>
+
+          <h3>10. Support Bundle Generation (VKS 3.6)</h3>
+          <p>When all else fails, generate a support bundle. VKS 3.6 allows cluster users to do this without vCenter SSO admin.</p>
+          <div class="code-block">
+            <div class="code-block-header"><span>bash</span><button class="copy-btn" aria-label="Copy code">Copy</button></div>
+            <pre><code><span class="comment"># Generate VKS support bundle (VKS 3.6+)</span>
+<span class="comment"># From the Supervisor context:</span>
+kubectl get cluster &lt;name&gt; -n &lt;ns&gt; -o yaml &gt; cluster-state.yaml
+
+<span class="comment"># From the workload cluster:</span>
+kubectl <span class="flag">--kubeconfig</span>=&lt;workload-kubeconfig&gt; cluster-info dump --output-directory=./cluster-dump/
+
+<span class="comment"># Compress and attach to SR</span>
+tar czf vks-support-bundle-$(date +%Y%m%d).tar.gz cluster-state.yaml cluster-dump/</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 11: Competitive Positioning ===== -->
     <div class="section" id="competitive" data-type="customer">
       <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
         <span class="section-icon">&#9876;</span>
@@ -1392,7 +1984,135 @@ kubectl get tanzukubernetesreleases</code></pre>
       </div>
     </div>
 
-    <!-- ===== SECTION 7: FAQ ===== -->
+    <!-- ===== SECTION 12: Customer Discovery ===== -->
+    <div class="section" id="discovery" data-type="customer">
+      <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
+        <span class="section-icon">&#127919;</span>
+        <h2>Customer Discovery Questions</h2>
+        <span class="chevron">&#9654;</span>
+      </div>
+      <div class="section-body expanded">
+        <div class="section-body-inner">
+          <p>Use these in your first meeting to assess where a customer is and what they need. Organized as a qualification flowchart.</p>
+
+          <h3>Phase 1: Current State Assessment</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Question</th><th>Why It Matters</th><th>Watch For</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>"What VCF version are you running?"</strong></td>
+                  <td>Determines VKS capabilities available</td>
+                  <td>VCF 5.2+ = VKS supported. VCF 9.0 = latest features. Anything older = upgrade conversation first.</td>
+                </tr>
+                <tr>
+                  <td><strong>"Are you running any Kubernetes today?"</strong></td>
+                  <td>Assesses starting point</td>
+                  <td>No K8s = greenfield (easier). Running OpenShift/Rancher = migration conversation. Running TKGs = upgrade/migration path.</td>
+                </tr>
+                <tr>
+                  <td><strong>"If yes &mdash; are you using TKC API or Cluster API?"</strong></td>
+                  <td>Migration urgency</td>
+                  <td>TKC = immediate migration planning. "I don't know" = probably TKC, check for them.</td>
+                </tr>
+                <tr>
+                  <td><strong>"What VKS/TKGs version are you on?"</strong></td>
+                  <td>Determines upgrade path complexity</td>
+                  <td>Anything below 3.3 = significant upgrade journey. Check VKr versions too.</td>
+                </tr>
+                <tr>
+                  <td><strong>"Do you have NSX deployed?"</strong></td>
+                  <td>Networking architecture decisions</td>
+                  <td>No NSX = VVF networking, no vSphere Pods. Impacts CNI and load balancer options.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Phase 2: Workload Understanding</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Question</th><th>Why It Matters</th><th>Watch For</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>"What workloads are you planning to containerize?"</strong></td>
+                  <td>Sizing and architecture</td>
+                  <td>Stateless web apps (easy). Databases (need TuneDProfiles). AI/ML (need GPU nodes). Windows apps (need Windows node pools).</td>
+                </tr>
+                <tr>
+                  <td><strong>"What's your target environment &mdash; dev/test, production, or both?"</strong></td>
+                  <td>Sizing and HA requirements</td>
+                  <td>Dev/test = 1 CP node OK. Production = 3 CP nodes, HA, proper PDBs.</td>
+                </tr>
+                <tr>
+                  <td><strong>"Do you have specific OS requirements for nodes?"</strong></td>
+                  <td>BYOI / ImageBaker relevance</td>
+                  <td>RHEL requirement = VKS 3.6+ needed. FIPS = Ubuntu Pro. Most customers = Photon (default) is fine.</td>
+                </tr>
+                <tr>
+                  <td><strong>"Are you running any of these: Elasticsearch, Kafka, Redis, MongoDB?"</strong></td>
+                  <td>TuneDProfile opportunity</td>
+                  <td>Yes = demo TuneDProfiles. These workloads commonly fail without kernel tuning.</td>
+                </tr>
+                <tr>
+                  <td><strong>"Do you need air-gapped deployment?"</strong></td>
+                  <td>Deployment architecture</td>
+                  <td>Yes = need local content library, ImageBaker standalone, manual VKr downloads.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Phase 3: Operational Maturity</h3>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Question</th><th>Why It Matters</th><th>Watch For</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>"Who manages K8s today &mdash; the infra team or a separate platform team?"</strong></td>
+                  <td>Training and adoption approach</td>
+                  <td>Infra team = VKS is a natural fit (vCenter-native). Separate platform team = may prefer Tanzu Platform features.</td>
+                </tr>
+                <tr>
+                  <td><strong>"What's your change management process for infrastructure upgrades?"</strong></td>
+                  <td>Upgrade planning</td>
+                  <td>Strict CAB = 24-month support window is a selling point. Agile = faster upgrade cycles OK.</td>
+                </tr>
+                <tr>
+                  <td><strong>"Are you using NGINX Ingress Controller?"</strong></td>
+                  <td>Deprecation planning</td>
+                  <td>Yes = migration to Avi Gateway API conversation. Start early, don't surprise them.</td>
+                </tr>
+                <tr>
+                  <td><strong>"How are you handling backups for K8s workloads?"</strong></td>
+                  <td>Velero / DR opportunity</td>
+                  <td>"We're not" = Velero conversation. "We use Kasten/Portworx" = compatibility check.</td>
+                </tr>
+                <tr>
+                  <td><strong>"What's your Lenovo hardware refresh timeline?"</strong></td>
+                  <td>VCF 9 + ThinkAgile VX opportunity</td>
+                  <td>Upcoming refresh = VCF 9 on ThinkAgile VX positioning. Recent refresh = work with existing hardware.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Red Flags to Escalate</h3>
+          <div class="callout callout-critical">
+            <strong>Escalate to engineering/specialist if you hear:</strong>
+            <ul style="margin-top: 8px;">
+              <li>"We're running 50+ TKC clusters" &mdash; mass migration needs careful planning</li>
+              <li>"We need multi-cluster service mesh" &mdash; Tanzu Platform / Istio multi-cluster architecture</li>
+              <li>"We're running VKS on non-VCF vSphere" &mdash; not a supported configuration</li>
+              <li>"We need to run K8s across multiple data centers" &mdash; multi-site architecture, stretched vSAN considerations</li>
+              <li>"We're evaluating OpenShift to replace VKS" &mdash; competitive save situation, bring in specialist</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION 13: FAQ ===== -->
     <div class="section" id="faq" data-type="customer">
       <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
         <span class="section-icon">&#10067;</span>
@@ -1710,7 +2430,7 @@ kubectl get tanzukubernetesreleases</code></pre>
 
     <!-- Footer -->
     <footer class="footer">
-      Built by VMware TAMs, for VMware TAMs. Not an official Broadcom/VMware resource.<br>
+      Built by <strong>Pranav Patel</strong> &mdash; for VMware TAMs, by a VMware TAM. Not an official Broadcom/VMware resource.<br>
       Content based on publicly available documentation as of April 2026.
     </footer>
 
