@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VKS/Tanzu Field Guide — TAM Rapid-Enablement Playbook</title>
-<meta name="description" content="Internal study guide for VMware TAMs on vSphere Kubernetes Service (VKS) and the Tanzu ecosystem for Lenovo enterprise accounts.">
+<title>VKS/Tanzu Field Guide — TAM Adoption &amp; Operations Playbook</title>
+<meta name="description" content="TAM adoption and operations playbook for vSphere Kubernetes Service (VKS) and the Tanzu ecosystem on Lenovo enterprise accounts.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -868,7 +868,7 @@ mark {
     <a href="#tkc-migration"><span class="nav-number">09</span> TKC Migration Playbook</a>
     <a href="#troubleshooting"><span class="nav-number">10</span> Troubleshooting Runbook</a>
     <a href="#competitive"><span class="nav-number">11</span> Competitive Positioning</a>
-    <a href="#discovery"><span class="nav-number">12</span> Customer Discovery</a>
+    <a href="#health-check"><span class="nav-number">12</span> Customer Health Check</a>
     <a href="#faq"><span class="nav-number">13</span> Customer FAQ</a>
     <a href="#resources"><span class="nav-number">14</span> Learning Resources</a>
     <a href="#study-plan"><span class="nav-number">15</span> 3-Day Study Plan</a>
@@ -900,7 +900,7 @@ mark {
     <!-- Hero -->
     <div class="hero">
       <h1>VKS/Tanzu Field Guide</h1>
-      <p class="subtitle">TAM rapid-enablement playbook for Lenovo accounts</p>
+      <p class="subtitle">TAM adoption &amp; operations playbook for Lenovo accounts</p>
       <p class="meta">Last updated: April 2026 &middot; VKS 3.6 &middot; VCF 9.0</p>
       <p class="meta" style="margin-top: 6px;">by <strong style="color: var(--accent-teal);">Pranav Patel</strong></p>
     </div>
@@ -1985,17 +1985,17 @@ tar czf vks-support-bundle-$(date +%Y%m%d).tar.gz cluster-state.yaml cluster-dum
     </div>
 
     <!-- ===== SECTION 12: Customer Discovery ===== -->
-    <div class="section" id="discovery" data-type="customer">
+    <div class="section" id="health-check" data-type="customer">
       <div class="section-header expanded" role="button" tabindex="0" aria-expanded="true">
         <span class="section-icon">&#127919;</span>
-        <h2>Customer Discovery Questions</h2>
+        <h2>Customer Health Check</h2>
         <span class="chevron">&#9654;</span>
       </div>
       <div class="section-body expanded">
         <div class="section-body-inner">
-          <p>Use these in your first meeting to assess where a customer is and what they need. Organized as a qualification flowchart.</p>
+          <p>Use these to assess your customer's current VKS deployment health, identify risks, and plan next steps. Run through these in your regular check-ins.</p>
 
-          <h3>Phase 1: Current State Assessment</h3>
+          <h3>Phase 1: Deployment State Assessment</h3>
           <div class="table-wrapper">
             <table>
               <thead><tr><th>Question</th><th>Why It Matters</th><th>Watch For</th></tr></thead>
@@ -2029,7 +2029,7 @@ tar czf vks-support-bundle-$(date +%Y%m%d).tar.gz cluster-state.yaml cluster-dum
             </table>
           </div>
 
-          <h3>Phase 2: Workload Understanding</h3>
+          <h3>Phase 2: Workload Health</h3>
           <div class="table-wrapper">
             <table>
               <thead><tr><th>Question</th><th>Why It Matters</th><th>Watch For</th></tr></thead>
@@ -2063,7 +2063,7 @@ tar czf vks-support-bundle-$(date +%Y%m%d).tar.gz cluster-state.yaml cluster-dum
             </table>
           </div>
 
-          <h3>Phase 3: Operational Maturity</h3>
+          <h3>Phase 3: Operational Readiness &amp; Next Steps</h3>
           <div class="table-wrapper">
             <table>
               <thead><tr><th>Question</th><th>Why It Matters</th><th>Watch For</th></tr></thead>
@@ -2097,7 +2097,7 @@ tar czf vks-support-bundle-$(date +%Y%m%d).tar.gz cluster-state.yaml cluster-dum
             </table>
           </div>
 
-          <h3>Red Flags to Escalate</h3>
+          <h3>Red Flags &mdash; Escalate Immediately</h3>
           <div class="callout callout-critical">
             <strong>Escalate to engineering/specialist if you hear:</strong>
             <ul style="margin-top: 8px;">
